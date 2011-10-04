@@ -36,10 +36,6 @@ public class Field extends CollidableEntityModel {
     @Override
     public boolean collidesWith(EntityModel entity) {
 
-        if(entity == this) {
-            return false;
-        }
-        
         if(entity instanceof Bullet) {
             return !this.getShape().contains(entity.getShape());
         }

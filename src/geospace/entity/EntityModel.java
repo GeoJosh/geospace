@@ -53,4 +53,19 @@ public abstract class EntityModel {
     public List<EntityModel> getSpawnedEntities() {
         return Collections.EMPTY_LIST;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final EntityModel other = (EntityModel) obj;
+        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -7,7 +7,7 @@ public class NullAgent extends AbstractAgent {
 
     public NullAgent() {
         this.agentName = "Null Agent";
-        this.agentDescription = "A test agent that does nothing.";
+        this.agentDescription = "A test agent that does nothing useful.";
     }
 
     @Override
@@ -18,6 +18,7 @@ public class NullAgent extends AbstractAgent {
     public ControllerState readControls() {
         ControllerState controllerState = new ControllerState();
         controllerState.setFiring(true);
+        controllerState.setTurningPort(true);
         
         return controllerState;
     }

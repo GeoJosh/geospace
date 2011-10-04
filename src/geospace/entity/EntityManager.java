@@ -39,6 +39,9 @@ public class EntityManager {
         for(EntityModel collEntity: this.entities) {
             if(collEntity instanceof CollidableEntityModel) {
                 ((CollidableEntityModel)collEntity).evaluateEntity(entity);
+                if (entity instanceof CollidableEntityModel) {
+                    ((CollidableEntityModel) entity).evaluateEntity(collEntity);
+                }
             }
         }
 

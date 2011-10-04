@@ -6,6 +6,7 @@ import geospace.control.agent.KeyboardAgent;
 import geospace.control.agent.service.ServiceAgentManager;
 import geospace.gui.GUIManager;
 import geospace.gui.WidgetPlayerSelector;
+import geospace.render.EffectManager;
 import geospace.states.PlayingState.GameMode;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -52,6 +53,8 @@ public class MenuState extends BasicGameState {
         ServiceAgentManager.getInstance().clearAgents();
 
         GUIManager.getInstance().addWidget(this.playerSelector);
+        EffectManager.getInstance().renderWaiting(gc.getWidth() / 2, gc.getHeight() / 2);
+
     }
 
     @Override
@@ -71,10 +74,13 @@ public class MenuState extends BasicGameState {
                 sbg.enterState(GeoSpace.WAITING_STATE);
             }
         }
+        
+        EffectManager.getInstance().update(gc, i);
     }
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
+        EffectManager.getInstance().render(grphcs);
         GUIManager.getInstance().render();
     }
 

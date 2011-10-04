@@ -38,5 +38,6 @@ abstract public class CollidableEntityModel extends EntityModel {
             }
         }
     }
+    
     abstract public boolean collidesWith(EntityModel entity);
 }

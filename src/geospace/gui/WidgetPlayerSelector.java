@@ -1,10 +1,14 @@
 package geospace.gui;
 
+import geospace.render.FontManager;
+import geospace.render.FontManager.FontType;
 import geospace.states.PlayingState.GameMode;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.RoundedRectangle;
@@ -30,6 +34,7 @@ public class WidgetPlayerSelector extends AbstractGuiWidget {
         this.gameMode = GameMode.DUEL;
 
         this.entries = new LinkedList<Entry<String, String>>(entries);
+        Collections.sort(this.entries, new AgentEntrySorter());
         this.labels = new LinkedList<String>();
         for (Entry<String, String> entry : this.entries) {
             this.labels.add(entry.getValue());
@@ -59,12 +64,15 @@ public class WidgetPlayerSelector extends AbstractGuiWidget {
             this.confirmButton.addListener(this);
             GUIManager.getInstance().addWidget(this.confirmButton);
         }
-        Font gameFont = gameContainer.getGraphics().getFont();
-        gameFont.drawString(this.frame.getCenterX() - gameFont.getWidth(PLAYER_ONE_STRING) / 2, this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, PLAYER_ONE_STRING);
-        gameFont.drawString(this.frame.getCenterX() - gameFont.getWidth(PLAYER_TWO_STRING) / 2, this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING + 150, PLAYER_TWO_STRING);
-
+        gameContainer.getGraphics().setColor(DEFAULT_WIDGET_BGCOLOR);
+        gameContainer.getGraphics().fillRoundRect(frame.getMinX(), frame.getMinY(), frame.getWidth(), frame.getHeight(), (int)frame.getCornerRadius());
         gameContainer.getGraphics().setColor(AbstractGuiWidget.DEFAULT_WIDGET_COLOR);
         gameContainer.getGraphics().draw(frame);
+
+        Font widgetFont = FontManager.getInstance().getFont(FontType.WIDGET, PLAYER_ONE_STRING + PLAYER_TWO_STRING);
+        widgetFont.drawString(this.frame.getCenterX() - widgetFont.getWidth(PLAYER_ONE_STRING) / 2, this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, PLAYER_ONE_STRING);
+        widgetFont.drawString(this.frame.getCenterX() - widgetFont.getWidth(PLAYER_TWO_STRING) / 2, this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING + 150, PLAYER_TWO_STRING);
+
     }
 
     public boolean isReadyToStart() {

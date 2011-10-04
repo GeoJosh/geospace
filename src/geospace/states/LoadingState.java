@@ -4,8 +4,14 @@ import geospace.GeoSpace;
 import geospace.audio.AudioManager;
 import geospace.gui.GUIManager;
 import geospace.render.DrawManager;
+import geospace.render.FontManager;
+import geospace.render.FontManager.FontType;
 import geospace.render.elements.ImageRender;
+import geospace.states.runners.PauseRunner;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,15 +24,16 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
+import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class LoadingState extends BasicGameState {
+
     private int stateId;
     private Thread pauseThread;
-
     private List<ImageRender> imageResources;
 
     public LoadingState(int id) {
@@ -43,22 +50,34 @@ public class LoadingState extends BasicGameState {
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
         gc.setShowFPS(false);
         gc.setTargetFrameRate(60);
-        
+
+        try {
+            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, LoadingState.class.getResourceAsStream("/resources/font/monaco.ttf"));
+
+            FontManager.getInstance().setFont(FontType.DEFAULT, new UnicodeFont(baseFont.deriveFont(14.0f)));
+            FontManager.getInstance().setFont(FontType.WIDGET, new UnicodeFont(baseFont.deriveFont(14.0f)));
+            FontManager.getInstance().setFont(FontType.TIMER, new UnicodeFont(baseFont.deriveFont(25.0f)));
+        } catch (FontFormatException ex) {
+            Logger.getLogger(LoadingState.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(LoadingState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         Image logoImage = new Image(LoadingState.class.getResourceAsStream("/resources/images/logo.png"), "Big Logo", false);
         this.imageResources.add(new ImageRender(logoImage, (gc.getWidth() - logoImage.getWidth()) / 2, (gc.getHeight() - logoImage.getHeight()) / 2));
 
         DrawManager.getInstance().init();
         GUIManager.getInstance().init(gc);
-        
+
         try {
             String[] tracks = (new File(LoadingState.class.getResource("/resources/sound/background").toURI())).list();
-            for(String track : tracks) {
+            for (String track : tracks) {
                 AudioManager.getInstance().addMusic(new Music(PlayingState.class.getResource("/resources/sound/background/" + track), true));
             }
         } catch (URISyntaxException ex) {
             Logger.getLogger(LoadingState.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         AudioManager.getInstance().addSound(AudioManager.EffectType.SHOT, new Sound(PlayingState.class.getResource("/resources/sound/shot.ogg")));
         AudioManager.getInstance().addSound(AudioManager.EffectType.DEATH, new Sound(PlayingState.class.getResource("/resources/sound/death.ogg")));
     }
@@ -67,12 +86,11 @@ public class LoadingState extends BasicGameState {
     public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
         super.enter(gc, sbg);
 
-        DrawManager.getInstance().addImage(this.imageResources);
-        
         this.pauseThread = new Thread(new PauseRunner(2000));
         this.pauseThread.start();
+        DrawManager.getInstance().addImage(this.imageResources);
     }
-    
+
     @Override
     public void leave(GameContainer container, StateBasedGame sbg) throws SlickException {
         StateJanitor.cleanupState();
@@ -80,7 +98,8 @@ public class LoadingState extends BasicGameState {
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
-        if(this.pauseThread.getState() == Thread.State.TERMINATED) {
+
+        if (this.pauseThread.getState() == Thread.State.TERMINATED) {
             sbg.enterState(GeoSpace.MENU_STATE, new FadeOutTransition(new Color(0, 0, 0, 0), 500), new FadeInTransition());
         }
     }

@@ -22,6 +22,7 @@ public class EffectManager {
     private ConfigurableEmitter spawnEmitter;
     private ConfigurableEmitter trailEmitter;
     private ConfigurableEmitter hitEmitter;
+    private ConfigurableEmitter waitingEmitter;
 
     private List<AbstractBindableEmitter> bindableEmitters;
     private List<ExpirableEmitter> expirableEmitters;
@@ -35,6 +36,7 @@ public class EffectManager {
             this.spawnEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/spawn.xml").getPath());
             this.trailEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/trail.xml").getPath());
             this.hitEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/hit.xml").getPath());
+            this.waitingEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/waiting.xml").getPath());
 
             this.bindableEmitters = new LinkedList<AbstractBindableEmitter>();
             this.expirableEmitters = new LinkedList<ExpirableEmitter>();
@@ -82,6 +84,12 @@ public class EffectManager {
         emitter.setPosition(ship.getCenter().getX(), ship.getCenter().getY());
         this.particleSystem.addEmitter(emitter);
         this.bindableEmitters.add(new ShipEmitter(ship, emitter));
+    }
+
+    public void renderWaiting(float x, float y) {
+        ConfigurableEmitter emitter = this.waitingEmitter.duplicate();
+        emitter.setPosition(x, y);
+        this.particleSystem.addEmitter(emitter);
     }
 
     public void renderHit(float x, float y) {

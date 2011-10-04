@@ -1,5 +1,8 @@
 package geospace.gui;
 
+import geospace.render.FontManager;
+import geospace.render.FontManager.FontType;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.RoundedRectangle;
 
@@ -22,8 +25,10 @@ public class WidgetDialog extends AbstractGuiWidget {
     @Override
     public void render(GameContainer gameContainer) {
         if(this.frame == null) {
-            this.messageWidth = gameContainer.getGraphics().getFont().getWidth(this.message);
-            this.messageHeight = gameContainer.getGraphics().getFont().getLineHeight();
+
+            Font widgetFont = FontManager.getInstance().getFont(FontType.WIDGET, this.message);        
+            this.messageWidth = widgetFont.getWidth(this.message);
+            this.messageHeight = widgetFont.getLineHeight();
             
             this.frame = new RoundedRectangle(
                     (gameContainer.getWidth() - this.messageWidth) / 2 - AbstractGuiWidget.WIDGET_PADDING,
@@ -39,7 +44,7 @@ public class WidgetDialog extends AbstractGuiWidget {
         
         gameContainer.getGraphics().setColor(AbstractGuiWidget.DEFAULT_WIDGET_COLOR);
         gameContainer.getGraphics().draw(frame);
-        gameContainer.getGraphics().getFont().drawString(this.frame.getCenterX() - (this.messageWidth / 2), this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, this.message);
+        FontManager.getInstance().getFont(FontType.WIDGET, this.message).drawString(this.frame.getCenterX() - (this.messageWidth / 2), this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, this.message);
     }
     
     @Override

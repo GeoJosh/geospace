@@ -1,7 +1,10 @@
 package geospace.gui;
 
+import geospace.render.FontManager;
+import geospace.render.FontManager.FontType;
 import java.util.UUID;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.RoundedRectangle;
 
@@ -35,8 +38,10 @@ public class WidgetButton extends AbstractMouseListener {
     @Override
     public void render(GameContainer gameContainer) {
         if(this.frame == null) {
-            this.labelWidth = gameContainer.getGraphics().getFont().getWidth(this.label);
-            this.labelHeight = gameContainer.getGraphics().getFont().getLineHeight();
+            Font widgetFont =  FontManager.getInstance().getFont(FontType.WIDGET, this.label);
+
+            this.labelWidth = widgetFont.getWidth(this.label);
+            this.labelHeight = widgetFont.getLineHeight();
             
             this.frame = new RoundedRectangle(
                     this.centerX - (this.labelWidth / 2) - AbstractGuiWidget.WIDGET_PADDING,
@@ -48,7 +53,7 @@ public class WidgetButton extends AbstractMouseListener {
         
         gameContainer.getGraphics().setColor(this.displayColor);
         gameContainer.getGraphics().draw(this.frame);
-        gameContainer.getGraphics().getFont().drawString(this.frame.getCenterX() - (this.labelWidth / 2), this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, this.label);
+        FontManager.getInstance().getFont(FontType.WIDGET, this.label).drawString(this.frame.getCenterX() - (this.labelWidth / 2), this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, this.label);
     }
 
     public void mousePressed(int button, int x, int y) {

@@ -1,5 +1,6 @@
 package geospace.states;
 
+import geospace.GeoSpace;
 import geospace.audio.AudioManager;
 import geospace.render.EffectManager;
 import geospace.control.agent.AbstractAgent;
@@ -13,13 +14,12 @@ import geospace.entity.EntityManager;
 import geospace.gui.GUIManager;
 import geospace.render.elements.EnergyBar;
 import geospace.render.elements.ImageRender;
+import geospace.render.elements.TimerClock;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -35,6 +35,8 @@ public class PlayingState extends BasicGameState {
     private List<Player> players;
     private CurrentGameState currentGameState;
     private GameMode currentGameMode;
+    private TimerClock timerClock;
+    private Thread timerThread;
     
     public enum GameMode {
         DUEL,
@@ -43,7 +45,6 @@ public class PlayingState extends BasicGameState {
     
     public PlayingState(int stateId) {
         this.stateId = stateId;
-        this.imageResources = new LinkedList<ImageRender>();
         
         this.players = new LinkedList<Player>();
         this.currentGameState = new CurrentGameState();
@@ -71,29 +72,28 @@ public class PlayingState extends BasicGameState {
 
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-        Image logoImage = new Image(PlayingState.class.getResourceAsStream("/resources/images/logo-small.png"), "Small Logo", false);
-        this.imageResources.add(new ImageRender(logoImage, (gc.getWidth() - logoImage.getWidth()) / 2, (PlayingState.TITLE_HEIGHT + PlayingState.BORDER_SIZE - logoImage.getHeight()) / 2));
-
     }
 
     @Override
     public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
         super.enter(gc, sbg);
 
-        DrawManager.getInstance().addImage(this.imageResources);
-
         this.gameStage = new Stage(new Point(BORDER_SIZE, BORDER_SIZE + TITLE_HEIGHT), gc.getWidth() - (2 * BORDER_SIZE), gc.getHeight() - (2 * BORDER_SIZE) - TITLE_HEIGHT);
-        Random randomGenerator = new Random();
 
         AudioManager.getInstance().playRandomMusic(false);
         
+        Random randomGenerator = new Random();
         for(Player player : this.players) {
-            player.setShip(new Ship(player.getAgent(), 50 + (randomGenerator.nextFloat() * this.gameStage.getStageWidth() - 100), 50 + (randomGenerator.nextFloat() * this.gameStage.getStageHeight() - 100), randomGenerator.nextFloat() * 360, new Color(randomGenerator.nextInt() | 0xFF000000)));
+            player.setShip(new Ship(player.getAgent(), 100 + (randomGenerator.nextFloat() * (this.gameStage.getStageWidth() - 200)), 100 + (randomGenerator.nextFloat() * (this.gameStage.getStageHeight() - 200)), randomGenerator.nextFloat() * 360, player.getPlayerColor()));
             EffectManager.getInstance().renderSpawn(player.getShip().getCenter().getX(), player.getShip().getCenter().getY());
             EntityManager.getInstance().addEntity(player.getShip());
         }
         
         initializeGameMode();
+        
+        this.timerClock = new TimerClock(60000, this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
+        this.timerThread = new Thread(this.timerClock);
+        this.timerThread.start();
     }
 
     
@@ -109,6 +109,10 @@ public class PlayingState extends BasicGameState {
         this.gameStage.setStageClipping(gc.getGraphics(), true);
         EffectManager.getInstance().update(gc, delta);
         this.gameStage.setStageClipping(gc.getGraphics(), false);
+        
+        if(this.timerThread.getState() == Thread.State.TERMINATED) {
+            sbg.enterState(GeoSpace.MENU_STATE);
+        }
     }
 
     @Override
@@ -128,6 +132,9 @@ public class PlayingState extends BasicGameState {
         this.gameStage.setStageClipping(graphics, false);
         
         graphics.resetTransform();
+        
+        this.timerClock.render(graphics);
+        
         GUIManager.getInstance().render();
 
         this.currentGameState.updateState();
@@ -141,8 +148,8 @@ public class PlayingState extends BasicGameState {
     private void initializeGameMode() {
         switch(this.currentGameMode) {
             case DUEL:
-                this.players.get(0).setEnergyBar(new EnergyBar(this.players.get(0).getShip(), new Point(BORDER_SIZE, BORDER_SIZE), (this.gameStage.getStageWidth() / 2) - 50, TITLE_HEIGHT - BORDER_SIZE));
-                this.players.get(1).setEnergyBar(new EnergyBar(this.players.get(1).getShip(), new Point((this.gameStage.getStageWidth() / 2) + 50 + BORDER_SIZE, BORDER_SIZE), (this.gameStage.getStageWidth() / 2) - 50, TITLE_HEIGHT - BORDER_SIZE));
+                this.players.get(0).setEnergyBar(new EnergyBar(this.players.get(0).getShip(), new Point(BORDER_SIZE, BORDER_SIZE), (this.gameStage.getStageWidth() / 2) - 100, TITLE_HEIGHT - BORDER_SIZE));
+                this.players.get(1).setEnergyBar(new EnergyBar(this.players.get(1).getShip(), new Point((this.gameStage.getStageWidth() / 2) + 100 + BORDER_SIZE, BORDER_SIZE), (this.gameStage.getStageWidth() / 2) - 100, TITLE_HEIGHT - BORDER_SIZE));
                 break;
         }        
         

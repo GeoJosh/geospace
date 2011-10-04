@@ -19,12 +19,10 @@ public class Ship extends CollidableEntityModel {
     private static final float SHIP_HEADING_DELTA = TWOPI / 100;
     private static final double SHIP_ACCELERATION_FORCE = 0.05;
     private static final double DRAG_FORCE = 0.001;
-
     public static final int SHIP_MAX_ENERGY = 100000;
     private static final int SHIP_ENERGY_REGEN = Ship.SHIP_MAX_ENERGY / 5000;
     private static final int SHIP_ENERGY_COST_FIRE = 1000;
     private static final int SHIP_ENERGY_COST_SHIELD = 500;
-
     private AbstractAgent controller;
     private Shape baseShape;
     private Point center;
@@ -34,12 +32,12 @@ public class Ship extends CollidableEntityModel {
     private int energy;
     private Transform translateTransform;
     private Transform rotationTransform;
-
     private List<Bullet> bullets;
+    private List<EntityModel> bouncingEntities;
 
     public Ship(AbstractAgent controller, float centerX, float centerY, float heading, Color color) {
         super(Ship.class, Bullet.class);
-        
+
         this.state = EntityState.SPAWN;
         this.controller = controller;
 
@@ -64,6 +62,7 @@ public class Ship extends CollidableEntityModel {
                     2.0f, -6.0f,});
 
         this.bullets = new LinkedList<Bullet>();
+        this.bouncingEntities = new LinkedList<EntityModel>();
         this.updateShape();
     }
 
@@ -91,12 +90,17 @@ public class Ship extends CollidableEntityModel {
         return new Circle(this.center.getX(), this.center.getY(), baseShape.getBoundingCircleRadius());
     }
 
+    public void adjustBounce(Vector2f velocity, EntityModel entity) {
+        this.velocity = velocity;
+        this.bouncingEntities.add(entity);
+    }
+
     @Override
     public List<EntityModel> getSpawnedEntities() {
-        if(this.bullets.isEmpty()) {
+        if (this.bullets.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        
+
         LinkedList<EntityModel> entities = new LinkedList<EntityModel>(this.bullets);
         this.bullets.clear();
 
@@ -112,7 +116,7 @@ public class Ship extends CollidableEntityModel {
 
         updateLocation(controllerState);
 
-        if(controllerState.isFiring() && this.energy >= Ship.SHIP_ENERGY_COST_FIRE) {
+        if (controllerState.isFiring() && this.energy >= Ship.SHIP_ENERGY_COST_FIRE) {
             Bullet firedBullet = new Bullet(new Point(this.center), this.heading, this.color);
             firedBullet.update(0);
             this.bullets.add(firedBullet);
@@ -120,7 +124,7 @@ public class Ship extends CollidableEntityModel {
         }
 
         this.shielding = controllerState.isShielding() && this.energy >= Ship.SHIP_ENERGY_COST_SHIELD;
-        if(this.shielding) {
+        if (this.shielding) {
             this.energy -= Ship.SHIP_ENERGY_COST_SHIELD;
         }
     }
@@ -181,22 +185,68 @@ public class Ship extends CollidableEntityModel {
 
     @Override
     public boolean collidesWith(EntityModel entity) {
-        if(entity == this) {
-            return false;
-        }
-        
-        if(entity instanceof Bullet) {
-            if(this.isShielding() && (this.getShipShield().contains(entity.getShape()) || this.getShipShield().intersects(entity.getShape()))) {
+
+        if (entity instanceof Bullet) {
+            if (this.isShielding() && (this.getShipShield().contains(entity.getShape()) || this.getShipShield().intersects(entity.getShape()))) {
                 entity.state = EntityState.DEAD;
                 return false;
             }
-            
+
             boolean collided = this.shape.contains(entity.getShape()) || this.shape.intersects(entity.getShape());
-            if(collided) {
+            if (collided) {
                 this.state = EntityState.DEAD;
             }
             return collided;
         }
+
+        if (entity instanceof Ship) {
+
+            if (this.shielding) {
+                if (!((Ship)entity).isShielding() && this.getShipShield().intersects(entity.getShape())) {
+                    entity.state = EntityState.DEAD;
+                    return true;
+                } else if (((Ship)entity).isShielding() && this.getShipShield().intersects(((Ship)entity).getShipShield())) {
+                    if (!this.bouncingEntities.contains(entity)) {
+                        collideVelocityVectors(this, (Ship) entity);
+                    }
+                    return false;
+                }
+            } else {
+                if (!((Ship)entity).isShielding() && this.shape.intersects(((Ship)entity).getShape())) {
+                    this.state = EntityState.DEAD;
+                    entity.state = EntityState.DEAD;
+                    return true;
+                }
+            }
+        }
+
+        if (this.bouncingEntities.contains(entity) && (Point.distance(this.center, ((Ship)entity).getCenter()) > (2 * this.getShipShield().getBoundingCircleRadius()))) {
+            this.bouncingEntities.remove(entity);
+        }
+
         return false;
+    }
+
+    private static void collideVelocityVectors(Ship shipOne, Ship shipTwo) {
+        Vector2f velocityOne = new Vector2f(shipOne.getVelocity());
+        Vector2f velocityTwo = new Vector2f(shipTwo.getVelocity());
+
+        Vector2f collisionVector = new Vector2f(velocityOne.x - velocityTwo.x, velocityOne.y - velocityTwo.y);
+        double collisionTheta = 90 - collisionVector.getTheta();
+
+        velocityOne.sub(collisionTheta);
+        velocityTwo.sub(collisionTheta);
+
+        float oneY = velocityOne.y;
+        float twoY = velocityTwo.y;
+
+        velocityOne.y = twoY;
+        velocityTwo.y = oneY;
+
+        velocityOne.add(collisionTheta);
+        velocityTwo.add(collisionTheta);
+
+        shipOne.adjustBounce(velocityOne, shipTwo);
+        shipTwo.adjustBounce(velocityTwo, shipOne);
     }
 }
