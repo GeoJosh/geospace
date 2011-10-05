@@ -1,0 +1,71 @@
+GeoSpace
+
+============
+Requirements
+============
+
+Java Runtime Environment 1.6 or higher
+
+============
+Instructions
+============
+
+To run the program from the command line execute the following:
+
+    java -Djava.library.path=./lib/native/[system type] -jar GeoSpace.jar
+
+Specifically for each supported architecture:
+
+Linux:
+
+    java -Djava.library.path=./lib/native/linux -jar GeoSpace.jar
+
+Mac OSX:
+
+    java -Djava.library.path=./lib/native/macosx -jar GeoSpace.jar
+
+Solaris:
+
+    java -Djava.library.path=./lib/native/solaris -jar GeoSpace.jar
+
+Windows:
+
+    java -Djava.library.path=./lib/native/windows -jar GeoSpace.jar
+
+=================
+Creating an Agent
+=================
+
+----------
+Java Agent
+----------
+1. Implement a concrete class extending geospace.control.agent.AbstractAgent.
+2. Implement the informGameState method. Note that it can be assumed that this method
+   will be invoked at a rate of approximately 60Hz.
+3. Compile the agent jar and add it to the classpath.
+4. Add the full package and class name to the agents line of the geospace.properties file.
+5. Execute the GeoSpace application and click on the desired player until the agent is listed.
+6. Click on the Start button.
+7. As the program runs informGameState will be called each time the game state updates. As required modify the
+   class' agentController property to control your ship.
+
+-----------------
+Web Service Agent
+-----------------
+1. Execute the GeoSpace application.
+2. Access the GeoSpace WSDL at: http://localhost:10508/AgentService?wsdl
+3. Implement the getLastGameState method. Note that this method will need to be polled and
+   will be updated so faster than approximately 60Hz.
+4. Click on the desired player until the "Unconnected Service Agent" is listed.
+5. Click on the Start button.
+6. When the program state that it is waiting for agents to connect execute your application.
+7. Execute the connectAgent method noting the information that is returned.
+8. As the program runs execute getLastGameState to get the most recent game state and execute
+   setControllerState as necessary.
+
+===============
+Release History
+===============
+
+0.1
+Initial Release

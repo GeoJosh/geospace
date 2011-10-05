@@ -52,7 +52,7 @@ public class LoadingState extends BasicGameState {
         gc.setTargetFrameRate(60);
 
         try {
-            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, LoadingState.class.getResourceAsStream("/resources/font/monaco.ttf"));
+            Font baseFont = Font.createFont(Font.TRUETYPE_FONT, new File("./resources/font/monaco.ttf"));
 
             FontManager.getInstance().setFont(FontType.DEFAULT, new UnicodeFont(baseFont.deriveFont(14.0f)));
             FontManager.getInstance().setFont(FontType.WIDGET, new UnicodeFont(baseFont.deriveFont(14.0f)));
@@ -63,23 +63,21 @@ public class LoadingState extends BasicGameState {
             Logger.getLogger(LoadingState.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Image logoImage = new Image(LoadingState.class.getResourceAsStream("/resources/images/logo.png"), "Big Logo", false);
+        Image logoImage = new Image("./resources/images/logo.png");
         this.imageResources.add(new ImageRender(logoImage, (gc.getWidth() - logoImage.getWidth()) / 2, (gc.getHeight() - logoImage.getHeight()) / 2));
 
         DrawManager.getInstance().init();
         GUIManager.getInstance().init(gc);
 
-        try {
-            String[] tracks = (new File(LoadingState.class.getResource("/resources/sound/background").toURI())).list();
-            for (String track : tracks) {
-                AudioManager.getInstance().addMusic(new Music(PlayingState.class.getResource("/resources/sound/background/" + track), true));
+        String[] tracks = (new File("./resources/sound/background")).list();
+        for (String track : tracks) {
+            if (track.endsWith("ogg")) {
+                AudioManager.getInstance().addMusic(new Music("./resources/sound/background/" + track, true));
             }
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(LoadingState.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        AudioManager.getInstance().addSound(AudioManager.EffectType.SHOT, new Sound(PlayingState.class.getResource("/resources/sound/shot.ogg")));
-        AudioManager.getInstance().addSound(AudioManager.EffectType.DEATH, new Sound(PlayingState.class.getResource("/resources/sound/death.ogg")));
+        AudioManager.getInstance().addSound(AudioManager.EffectType.SHOT, new Sound("./resources/sound/shot.ogg"));
+        AudioManager.getInstance().addSound(AudioManager.EffectType.DEATH, new Sound("./resources/sound/death.ogg"));
     }
 
     @Override

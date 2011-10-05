@@ -31,12 +31,12 @@ public class EffectManager {
 
     private EffectManager() {
         try {
-            this.particleSystem = ParticleIO.loadConfiguredSystem(EffectManager.class.getResource("/resources/particles/particleSystem.xml").getPath());
+            this.particleSystem = ParticleIO.loadConfiguredSystem("./resources/particles/particleSystem.xml");
             this.particleSystem.setRemoveCompletedEmitters(true);
-            this.spawnEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/spawn.xml").getPath());
-            this.trailEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/trail.xml").getPath());
-            this.hitEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/hit.xml").getPath());
-            this.waitingEmitter = ParticleIO.loadEmitter(EffectManager.class.getResource("/resources/particles/waiting.xml").getPath());
+            this.spawnEmitter = ParticleIO.loadEmitter("./resources/particles/spawn.xml");
+            this.trailEmitter = ParticleIO.loadEmitter("./resources/particles/trail.xml");
+            this.hitEmitter = ParticleIO.loadEmitter("./resources/particles/hit.xml");
+            this.waitingEmitter = ParticleIO.loadEmitter("./resources/particles/waiting.xml");
 
             this.bindableEmitters = new LinkedList<AbstractBindableEmitter>();
             this.expirableEmitters = new LinkedList<ExpirableEmitter>();

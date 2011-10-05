@@ -8,6 +8,7 @@ import geospace.gui.GUIManager;
 import geospace.gui.WidgetPlayerSelector;
 import geospace.render.EffectManager;
 import geospace.states.PlayingState.GameMode;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -74,7 +75,7 @@ public class MenuState extends BasicGameState {
                 sbg.enterState(GeoSpace.WAITING_STATE);
             }
         }
-        
+
         EffectManager.getInstance().update(gc, i);
     }
 
@@ -88,7 +89,7 @@ public class MenuState extends BasicGameState {
         Properties props = new Properties();
         Map<String, String> classes = new HashMap<String, String>();
         try {
-            props.load(MenuState.class.getResourceAsStream("/resources/agents.properties"));
+            props.load(new FileInputStream("./resources/geospace.properties"));
             for (String className : props.getProperty("agents").split(",")) {
                 AbstractAgent agent = this.instantiateAgentClass(className);
                 if (agent != null) {
@@ -143,10 +144,10 @@ public class MenuState extends BasicGameState {
                 break;
             case BATTLE_ROYALE:
                 List<AbstractAgent> agents = new LinkedList<AbstractAgent>();
-                for(Entry<String, String> agentEntry : this.agentClasses.entrySet()) {
+                for (Entry<String, String> agentEntry : this.agentClasses.entrySet()) {
                     agents.add(this.initializeAgent(gc, this.instantiateAgentClass(agentEntry.getKey())));
                 }
-                
+
                 ((PlayingState) sbg.getState(GeoSpace.PLAYING_STATE)).setPlayerControllers(agents);
                 break;
         }

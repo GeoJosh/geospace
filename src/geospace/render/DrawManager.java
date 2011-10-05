@@ -40,7 +40,7 @@ public class DrawManager {
 
     public void init() {
         try {
-            this.bulletImage = new Image(DrawManager.class.getResourceAsStream("/resources/images/bullet.png"), "bullet", false);
+            this.bulletImage = new Image("./resources/images/bullet.png");
         } catch (SlickException ex) {
             Logger.getLogger(DrawManager.class.getName()).log(Level.SEVERE, null, ex);
         }

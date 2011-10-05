@@ -15,9 +15,14 @@ import geospace.entity.EntityModel.EntityState;
 import geospace.gui.GUIManager;
 import geospace.render.elements.EnergyBar;
 import geospace.render.elements.TimerClock;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -93,7 +98,17 @@ public class PlayingState extends BasicGameState {
 
         initializeGameMode();
 
-        this.timerClock = new TimerClock(180, this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
+        int timelimit = 180;
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream("./resources/geospace.properties"));
+            timelimit = Integer.parseInt(props.getProperty("timelimit"));
+        }
+        catch (IOException ex) {
+            Logger.getLogger(PlayingState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        this.timerClock = new TimerClock(timelimit, this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
         this.timerThread = new Thread(this.timerClock);
         this.timerThread.start();
     }
