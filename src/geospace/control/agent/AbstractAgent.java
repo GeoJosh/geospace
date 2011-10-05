@@ -11,14 +11,16 @@ public abstract class AbstractAgent {
     protected String agentDescription;
     protected String agentId;
     
+    protected ControllerState agentController;
+    
     private long lastFired;
     private static final long firingInterval = 250;
 
     public AbstractAgent() {
+        this.agentController = new ControllerState();
     }
 
     abstract public void informGameState(final CurrentGameState cgs);
-    abstract protected ControllerState readControls();
 
     public String getAgentDescription() {
         return agentDescription;
@@ -37,7 +39,7 @@ public abstract class AbstractAgent {
     }
     
     public final ControllerState getControls() {
-        ControllerState controllerState = readControls();
+        ControllerState controllerState = this.agentController;
 
         if (!controllerState.isFiring()) {
             return controllerState;

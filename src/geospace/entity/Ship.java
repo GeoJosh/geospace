@@ -74,6 +74,25 @@ public class Ship extends CollidableEntityModel {
         return this.heading;
     }
 
+    public void resetShip(float centerX, float centerY, float heading) {
+        this.center.setX(centerX);
+        this.center.setY(centerY);
+        this.heading = heading;
+        this.rotationTransform = Transform.createRotateTransform(this.heading);
+
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+        this.energy = Ship.SHIP_MAX_ENERGY;
+
+        this.state = EntityState.SPAWN;
+
+    }
+
+    public void setHeading(float heading) {
+        this.heading = heading;
+        this.rotationTransform = Transform.createRotateTransform(this.heading);
+    }
+
     public Vector2f getVelocity() {
         return this.velocity;
     }
@@ -202,17 +221,17 @@ public class Ship extends CollidableEntityModel {
         if (entity instanceof Ship) {
 
             if (this.shielding) {
-                if (!((Ship)entity).isShielding() && this.getShipShield().intersects(entity.getShape())) {
+                if (!((Ship) entity).isShielding() && this.getShipShield().intersects(entity.getShape())) {
                     entity.state = EntityState.DEAD;
                     return true;
-                } else if (((Ship)entity).isShielding() && this.getShipShield().intersects(((Ship)entity).getShipShield())) {
+                } else if (((Ship) entity).isShielding() && this.getShipShield().intersects(((Ship) entity).getShipShield())) {
                     if (!this.bouncingEntities.contains(entity)) {
                         collideVelocityVectors(this, (Ship) entity);
                     }
                     return false;
                 }
             } else {
-                if (!((Ship)entity).isShielding() && this.shape.intersects(((Ship)entity).getShape())) {
+                if (!((Ship) entity).isShielding() && this.shape.intersects(((Ship) entity).getShape())) {
                     this.state = EntityState.DEAD;
                     entity.state = EntityState.DEAD;
                     return true;
@@ -220,7 +239,7 @@ public class Ship extends CollidableEntityModel {
             }
         }
 
-        if (this.bouncingEntities.contains(entity) && (Point.distance(this.center, ((Ship)entity).getCenter()) > (2 * this.getShipShield().getBoundingCircleRadius()))) {
+        if (this.bouncingEntities.contains(entity) && (Point.distance(this.center, ((Ship) entity).getCenter()) > (2 * this.getShipShield().getBoundingCircleRadius()))) {
             this.bouncingEntities.remove(entity);
         }
 

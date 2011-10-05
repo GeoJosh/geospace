@@ -1,6 +1,5 @@
 package geospace.control.agent;
 
-import geospace.control.ControllerState;
 import geospace.control.CurrentGameState;
 
 public class NullAgent extends AbstractAgent {
@@ -12,14 +11,11 @@ public class NullAgent extends AbstractAgent {
 
     @Override
     public void informGameState(final CurrentGameState cgs) {
-    }
-
-    @Override
-    public ControllerState readControls() {
-        ControllerState controllerState = new ControllerState();
-        controllerState.setFiring(true);
-        controllerState.setTurningPort(true);
-        
-        return controllerState;
+        this.agentController.setFiring(true);
+        this.agentController.setTurningPort(true);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+        }
     }
 }

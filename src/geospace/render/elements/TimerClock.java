@@ -11,14 +11,14 @@ import org.newdawn.slick.Graphics;
  */
 public class TimerClock implements Runnable {
 
-    private int timeLeft = 60000;
+    private int timeLeft;
     private float centerX;
     private float centerY;
     
     private static final int DELAY_VALUE = 100;
 
     public TimerClock(int timerStart, float x, float y) {
-        this.timeLeft = timerStart;
+        this.timeLeft = timerStart > 1000 ? timerStart : timerStart * 1000;
         this.centerX = x;
         this.centerY = y;
     }
@@ -31,6 +31,10 @@ public class TimerClock implements Runnable {
             }
         } catch (InterruptedException ex) {
         }
+    }
+
+    public int getTimeLeft() {
+        return timeLeft;
     }
     
     public void render(Graphics graphics) {

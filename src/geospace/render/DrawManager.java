@@ -6,11 +6,13 @@ import geospace.entity.EntityModel;
 import geospace.entity.Field;
 import geospace.entity.Point;
 import geospace.entity.Ship;
+import geospace.render.FontManager.FontType;
 import geospace.states.Player;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -19,7 +21,6 @@ public class DrawManager {
 
     private boolean enableWireframe = false;
     private Point offset;
-
     private List<ImageRender> images;
     private Image bulletImage;
 
@@ -48,7 +49,7 @@ public class DrawManager {
     public void setOffset(Point offset) {
         this.offset = offset;
     }
-    
+
     public boolean isEnableWireframe() {
         return enableWireframe;
     }
@@ -70,34 +71,38 @@ public class DrawManager {
     }
 
     public void renderImages() {
-        for(ImageRender image : this.images) {
+        for (ImageRender image : this.images) {
             image.getImage().draw(image.getX(), image.getY());
         }
     }
 
     public void renderPlayerInfo(Graphics graphics, Player player) {
         player.getEnergyBar().render(graphics);
+        
+        Font infoFont = FontManager.getInstance().getFont(FontType.TIMER, String.valueOf(player.getScore()));
+        infoFont.drawString(
+                player.getEnergyBar().getBarCenter().getX(),
+                player.getEnergyBar().getBarCenter().getY() - (infoFont.getLineHeight() / 2),
+                String.valueOf(player.getScore()));
     }
-    
+
     public void renderEntities(Graphics graphics, List<EntityModel> entities) {
-        for(EntityModel entity : entities) {
+        for (EntityModel entity : entities) {
             this.renderEntity(graphics, entity);
         }
     }
-    
+
     public void renderEntity(Graphics graphics, EntityModel entity) {
         graphics.translate(this.offset.getX(), this.offset.getY());
 
         graphics.setColor(entity.getColor());
-        
+
         if (entity instanceof Field) {
-            this.drawField(graphics, (Field)entity);
-        }
-        else if (entity instanceof Ship) {
-            this.drawShip(graphics, (Ship)entity);
-        }
-        else if (entity instanceof Bullet) {
-            this.drawBullet(graphics, (Bullet)entity);
+            this.drawField(graphics, (Field) entity);
+        } else if (entity instanceof Ship) {
+            this.drawShip(graphics, (Ship) entity);
+        } else if (entity instanceof Bullet) {
+            this.drawBullet(graphics, (Bullet) entity);
         }
 
         graphics.resetTransform();
@@ -121,6 +126,7 @@ public class DrawManager {
             }
         }
     }
+
     private void drawBullet(Graphics graphics, Bullet bullet) {
         graphics.drawImage(this.bulletImage, bullet.getCenter().getX() - (this.bulletImage.getWidth() / 2), bullet.getCenter().getY() - (this.bulletImage.getHeight() / 2));
     }

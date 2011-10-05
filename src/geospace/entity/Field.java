@@ -24,6 +24,13 @@ public class Field extends CollidableEntityModel {
     protected void updateShape() {
         this.shape = new Rectangle(0, 0, this.fieldWidth, this.fieldHeight);
     }
+    
+    public void shrinkField(float amount) {
+        this.fieldWidth -= 2 * amount;
+        this.fieldHeight -= 2 * amount;
+        
+        this.shape = new Rectangle(this.shape.getMinX() + amount, this.shape.getMinY() + amount, this.fieldWidth, this.fieldHeight);
+    }
 
     public float getFieldHeight() {
         return fieldHeight;
@@ -40,7 +47,6 @@ public class Field extends CollidableEntityModel {
             return !this.getShape().contains(entity.getShape());
         }
         else if(entity instanceof Ship) {
-            //TODO: Implement shield for ship
             return !this.getShape().contains(entity.getShape());
         }
         

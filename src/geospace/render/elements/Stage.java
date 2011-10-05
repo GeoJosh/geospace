@@ -23,6 +23,10 @@ public class Stage {
         this.clippingShape = new Rectangle(offset.getX()-1, offset.getY()-1, width+1, height+1);
     }
 
+    public void shrinkStage(float amount) {
+        this.bounds.shrinkField(amount);
+    }
+    
     public Point getStageOffset() {
         return this.offset;
     }

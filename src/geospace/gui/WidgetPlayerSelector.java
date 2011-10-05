@@ -20,7 +20,7 @@ public class WidgetPlayerSelector extends AbstractGuiWidget {
     private final static String PLAYER_ONE_STRING = "Agent One";
     private final static String PLAYER_TWO_STRING = "Agent Two";
     private RoundedRectangle frame;
-    private WidgetButton royaleButton;
+//    private WidgetButton royaleButton;
     private WidgetButton confirmButton;
     private GameMode gameMode;
     private WidgetClickableList playerOneList;
@@ -56,9 +56,9 @@ public class WidgetPlayerSelector extends AbstractGuiWidget {
             this.playerTwoList = new WidgetClickableList(this.labels, this.frame.getCenterX(), this.frame.getY() + 225);
             GUIManager.getInstance().addWidget(this.playerTwoList);
 
-            this.royaleButton = new WidgetButton("Battle Royale", this.frame.getCenterX(), this.frame.getMaxY() - 100);
-            this.royaleButton.addListener(this);
-            GUIManager.getInstance().addWidget(this.royaleButton);
+//            this.royaleButton = new WidgetButton("Battle Royale", this.frame.getCenterX(), this.frame.getMaxY() - 100);
+//            this.royaleButton.addListener(this);
+//            GUIManager.getInstance().addWidget(this.royaleButton);
 
             this.confirmButton = new WidgetButton("Start Game", this.frame.getCenterX(), this.frame.getMaxY() - 50);
             this.confirmButton.addListener(this);
@@ -95,15 +95,16 @@ public class WidgetPlayerSelector extends AbstractGuiWidget {
     public void notifyEvent(String id, EventType eventType) {
         switch (eventType) {
             case MOUSE_RELEASE:
-                if (id.equals(this.royaleButton.getId())) {
-                    this.gameMode = GameMode.BATTLE_ROYALE;
-
-                } else if (id.equals(this.confirmButton.getId())) {
+//                if (id.equals(this.royaleButton.getId())) {
+//                    this.gameMode = GameMode.BATTLE_ROYALE;
+//
+//                } else
+                if (id.equals(this.confirmButton.getId())) {
                     this.gameMode = GameMode.DUEL;
                 }
 
                 if (true) {
-                    GUIManager.getInstance().removeWidget(this.royaleButton);
+//                    GUIManager.getInstance().removeWidget(this.royaleButton);
                     GUIManager.getInstance().removeWidget(this.confirmButton);
                     GUIManager.getInstance().removeWidget(this);
 

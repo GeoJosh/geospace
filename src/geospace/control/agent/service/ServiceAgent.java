@@ -7,11 +7,9 @@ import java.util.UUID;
 
 public class ServiceAgent extends AbstractAgent {
 
-    protected ControllerState controllerState;
     protected String authToken;
 
     public ServiceAgent() {
-        this.controllerState = new ControllerState();
         this.authToken = UUID.randomUUID().toString();
         
         this.agentName = "Unconnected Service Agent";
@@ -25,15 +23,10 @@ public class ServiceAgent extends AbstractAgent {
     }
     
     public void setControllerState(ControllerState controllerState) {
-        this.controllerState = controllerState;
+        this.agentController = controllerState;
     }
     
     @Override
     public void informGameState(CurrentGameState cgs) {
-    }
-
-    @Override
-    protected ControllerState readControls() {
-        return this.controllerState;
     }
 }

@@ -32,4 +32,8 @@ public class EnergyBar {
         graphics.setColor(ship.getColor());
         graphics.fillRect(this.topLeft.getX() + EnergyBar.CORNER_RADIUS, this.topLeft.getY() + EnergyBar.CORNER_RADIUS - 1.0f, (width - (2 * EnergyBar.CORNER_RADIUS)) * ((float)ship.getEnergy() / Ship.SHIP_MAX_ENERGY), (height - (2 * EnergyBar.CORNER_RADIUS)));
     }
+    
+    public Point getBarCenter() {
+        return new Point(this.bar.getCenterX(), this.bar.getCenterY());
+    }
 }
