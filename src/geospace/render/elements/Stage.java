@@ -40,7 +40,6 @@ public class Stage {
     }
 
     public void update(GameContainer gc, int delta) {
-        EntityManager.getInstance().updateEntities(delta);
     }
 
     public void setStageClipping(Graphics graphics, boolean isClipping) {
@@ -53,6 +52,8 @@ public class Stage {
     }
 
     public void render(Graphics graphics) {
+
+        EntityManager.getInstance().updateEntities();
 
         DrawManager.getInstance().setOffset(this.offset);
         DrawManager.getInstance().renderEntity(graphics, this.bounds);

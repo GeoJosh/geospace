@@ -2,8 +2,10 @@ package geospace.states;
 
 import geospace.GeoSpace;
 import geospace.control.agent.AbstractAgent;
-import geospace.control.agent.KeyboardAgent;
+import geospace.control.agent.AbstractInputAgent;
 import geospace.control.agent.service.ServiceAgentManager;
+import geospace.entity.GeoSpaceException;
+import geospace.entity.Ship;
 import geospace.gui.GUIManager;
 import geospace.gui.WidgetPlayerSelector;
 import geospace.render.EffectManager;
@@ -20,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -93,7 +96,12 @@ public class MenuState extends BasicGameState {
             for (String className : props.getProperty("agents").split(",")) {
                 AbstractAgent agent = this.instantiateAgentClass(className);
                 if (agent != null) {
-                    classes.put(className, agent.getAgentName());
+                    try {
+                        new Ship(agent, 0, 0, 0, Color.black);
+                        classes.put(className, agent.getAgentName());
+                    } catch (GeoSpaceException ex) {
+                        Logger.getLogger(MenuState.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
             }
@@ -127,8 +135,8 @@ public class MenuState extends BasicGameState {
     }
 
     private AbstractAgent initializeAgent(GameContainer gc, AbstractAgent agent) {
-        if (agent instanceof KeyboardAgent) {
-            ((KeyboardAgent) agent).setInput(gc.getInput());
+        if (agent instanceof AbstractInputAgent) {
+            ((AbstractInputAgent) agent).setInput(gc.getInput());
         }
 
         return agent;

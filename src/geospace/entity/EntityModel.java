@@ -47,7 +47,7 @@ public abstract class EntityModel {
         return this.state;
     }
     
-    public void update(int delta) {
+    public void update() {
     }
 
     public List<EntityModel> getSpawnedEntities() {

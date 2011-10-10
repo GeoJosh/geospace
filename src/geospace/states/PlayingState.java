@@ -33,8 +33,8 @@ public class PlayingState extends BasicGameState {
 
     private int stateId;
     private Stage gameStage;
-    private static final int TITLE_HEIGHT = 50;
-    private static final int BORDER_SIZE = 10;
+    public static final int TITLE_HEIGHT = 50;
+    public static final int BORDER_SIZE = 10;
     private List<Player> players;
     private List<Thread> playerThreads;
     private final CurrentGameState currentGameState;
@@ -167,7 +167,7 @@ public class PlayingState extends BasicGameState {
         ship.resetShip(
                 100 + (randomGenerator.nextFloat() * (this.gameStage.getStageWidth() - 200)),
                 100 + (randomGenerator.nextFloat() * (this.gameStage.getStageHeight() - 200)),
-                randomGenerator.nextFloat() * 360);
+                randomGenerator.nextFloat() * (float)(2 * Math.PI));
 
         EntityManager.getInstance().addEntity(ship);
         EffectManager.getInstance().renderSpawn(ship.getCenter().getX(), ship.getCenter().getY());

@@ -60,9 +60,9 @@ public class EntityManager {
         this.entities.clear();
     }
     
-    public void updateEntities(int delta) {
+    public void updateEntities() {
         for (EntityModel entity : this.entities) {
-            entity.update(delta);
+            entity.update();
 
             for(EntityModel spawnedEntity : entity.getSpawnedEntities()) {
                 this.managementQueue.put(spawnedEntity, ManagementAction.ADD);

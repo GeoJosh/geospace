@@ -40,7 +40,7 @@ public class Bullet extends EntityModel {
     }
 
     @Override
-    public void update(int delta) {
+    public void update() {
         this.center.setX(this.center.getX() + this.velocity.x);
         this.center.setY(this.center.getY() + this.velocity.y);
 

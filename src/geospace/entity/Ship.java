@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
@@ -16,13 +17,6 @@ import org.newdawn.slick.util.FastTrig;
 public class Ship extends CollidableEntityModel {
 
     private static final float TWOPI = 2 * (float) Math.PI;
-    private static final float SHIP_HEADING_DELTA = TWOPI / 100;
-    private static final double SHIP_ACCELERATION_FORCE = 0.05;
-    private static final double DRAG_FORCE = 0.001;
-    public static final int SHIP_MAX_ENERGY = 100000;
-    private static final int SHIP_ENERGY_REGEN = Ship.SHIP_MAX_ENERGY / 5000;
-    private static final int SHIP_ENERGY_COST_FIRE = 1000;
-    private static final int SHIP_ENERGY_COST_SHIELD = 500;
     private AbstractAgent controller;
     private Shape baseShape;
     private Point center;
@@ -35,7 +29,7 @@ public class Ship extends CollidableEntityModel {
     private List<Bullet> bullets;
     private List<EntityModel> bouncingEntities;
 
-    public Ship(AbstractAgent controller, float centerX, float centerY, float heading, Color color) {
+    public Ship(AbstractAgent controller, float centerX, float centerY, float heading, Color color) throws GeoSpaceException {
         super(Ship.class, Bullet.class);
 
         this.state = EntityState.SPAWN;
@@ -46,20 +40,16 @@ public class Ship extends CollidableEntityModel {
         this.color = color;
         this.velocity = new Vector2f(0.0f, 0.0f);
         this.shielding = false;
-        this.energy = Ship.SHIP_MAX_ENERGY;
+        this.energy = Constants.SHIP_MAX_ENERGY;
 
         this.translateTransform = Transform.createTranslateTransform(centerX, centerY);
         this.rotationTransform = Transform.createRotateTransform(this.heading);
 
-        this.baseShape = new Polygon(new float[]{
-                    -1.0f, 0.0f,
-                    2.0f, 6.0f,
-                    10.0f, 6.0f,
-                    0.0f, 12.0f,
-                    -8.0f, 0.0f,
-                    0.0f, -12.0f,
-                    10.0f, -6.0f,
-                    2.0f, -6.0f,});
+        this.baseShape = new Polygon(controller.getAgentShipDesign());
+        System.out.println(this.baseShape.getBoundingCircleRadius());
+        if(this.baseShape.getBoundingCircleRadius() < 12.0f) {
+            throw new GeoSpaceException();
+        }
 
         this.bullets = new LinkedList<Bullet>();
         this.bouncingEntities = new LinkedList<EntityModel>();
@@ -82,10 +72,9 @@ public class Ship extends CollidableEntityModel {
 
         this.velocity.x = 0;
         this.velocity.y = 0;
-        this.energy = Ship.SHIP_MAX_ENERGY;
+        this.energy = Constants.SHIP_MAX_ENERGY;
 
         this.state = EntityState.SPAWN;
-
     }
 
     public void setHeading(float heading) {
@@ -126,25 +115,24 @@ public class Ship extends CollidableEntityModel {
         return entities;
     }
 
-    @Override
-    public void update(int delta) {
+    public void update() {
         ControllerState controllerState = this.controller.getControls();
 
-        this.energy += Ship.SHIP_ENERGY_REGEN;
-        this.energy = this.energy >= Ship.SHIP_MAX_ENERGY ? Ship.SHIP_MAX_ENERGY : this.energy;
+        this.energy += Constants.SHIP_ENERGY_REGEN;
+        this.energy = this.energy >= Constants.SHIP_MAX_ENERGY ? Constants.SHIP_MAX_ENERGY : this.energy;
 
         updateLocation(controllerState);
 
-        if (controllerState.isFiring() && this.energy >= Ship.SHIP_ENERGY_COST_FIRE) {
+        if (controllerState.isFiring() && this.energy >= Constants.SHIP_ENERGY_COST_FIRE) {
             Bullet firedBullet = new Bullet(new Point(this.center), this.heading, this.color);
-            firedBullet.update(0);
+            firedBullet.update();
             this.bullets.add(firedBullet);
-            this.energy -= Ship.SHIP_ENERGY_COST_FIRE;
+            this.energy -= Constants.SHIP_ENERGY_COST_FIRE;
         }
 
-        this.shielding = controllerState.isShielding() && this.energy >= Ship.SHIP_ENERGY_COST_SHIELD;
+        this.shielding = controllerState.isShielding() && this.energy >= Constants.SHIP_ENERGY_COST_SHIELD;
         if (this.shielding) {
-            this.energy -= Ship.SHIP_ENERGY_COST_SHIELD;
+            this.energy -= Constants.SHIP_ENERGY_COST_SHIELD;
         }
     }
 
@@ -159,11 +147,11 @@ public class Ship extends CollidableEntityModel {
 
     private void updateHeading(boolean turningPort, boolean turningStarboard) {
         if (turningPort) {
-            this.heading = (this.heading - Ship.SHIP_HEADING_DELTA) % Ship.TWOPI;
+            this.heading = (this.heading - Constants.SHIP_TURN_VELOCITY) % Ship.TWOPI;
         }
 
         if (turningStarboard) {
-            this.heading = (this.heading + Ship.SHIP_HEADING_DELTA) % Ship.TWOPI;
+            this.heading = (this.heading + Constants.SHIP_TURN_VELOCITY) % Ship.TWOPI;
         }
 
         if (turningPort || turningStarboard) {
@@ -173,16 +161,16 @@ public class Ship extends CollidableEntityModel {
 
     private void updateVelocity(boolean isAccelerating) {
         if (isAccelerating && this.velocity.length() < Bullet.VELOCITY) {
-            this.velocity.x += Ship.SHIP_ACCELERATION_FORCE * FastTrig.cos(this.heading);
-            this.velocity.y += Ship.SHIP_ACCELERATION_FORCE * FastTrig.sin(this.heading);
+            this.velocity.x += Constants.SHIP_ACCELERATION * FastTrig.cos(this.heading);
+            this.velocity.y += Constants.SHIP_ACCELERATION * FastTrig.sin(this.heading);
         }
 
-        if (Math.abs(this.velocity.x) > Ship.DRAG_FORCE) {
-            this.velocity.x += Ship.DRAG_FORCE * FastTrig.cos(this.velocity.getTheta() + Math.PI);
+        if (Math.abs(this.velocity.x) > Constants.DRAG_DECELERATION) {
+            this.velocity.x += Constants.DRAG_DECELERATION * FastTrig.cos(this.velocity.getTheta() + Math.PI);
         }
 
-        if (Math.abs(this.velocity.y) > Ship.DRAG_FORCE) {
-            this.velocity.y += Ship.DRAG_FORCE * FastTrig.sin(this.velocity.getTheta() + Math.PI);
+        if (Math.abs(this.velocity.y) > Constants.DRAG_DECELERATION) {
+            this.velocity.y += Constants.DRAG_DECELERATION * FastTrig.sin(this.velocity.getTheta() + Math.PI);
         }
     }
 

@@ -1,6 +1,5 @@
 package geospace.control.agent;
 
-import geospace.control.ControllerState;
 import geospace.control.CurrentGameState;
 import org.newdawn.slick.Input;
 

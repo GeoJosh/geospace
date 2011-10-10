@@ -1,5 +1,6 @@
 package geospace.render.elements;
 
+import geospace.entity.Constants;
 import geospace.entity.Point;
 import geospace.entity.Ship;
 import org.newdawn.slick.Color;
@@ -30,7 +31,7 @@ public class EnergyBar {
         graphics.draw(this.bar);
 
         graphics.setColor(ship.getColor());
-        graphics.fillRect(this.topLeft.getX() + EnergyBar.CORNER_RADIUS, this.topLeft.getY() + EnergyBar.CORNER_RADIUS - 1.0f, (width - (2 * EnergyBar.CORNER_RADIUS)) * ((float)ship.getEnergy() / Ship.SHIP_MAX_ENERGY), (height - (2 * EnergyBar.CORNER_RADIUS)));
+        graphics.fillRect(this.topLeft.getX() + EnergyBar.CORNER_RADIUS, this.topLeft.getY() + EnergyBar.CORNER_RADIUS - 1.0f, (width - (2 * EnergyBar.CORNER_RADIUS)) * ((float)ship.getEnergy() / Constants.SHIP_MAX_ENERGY), (height - (2 * EnergyBar.CORNER_RADIUS)));
     }
     
     public Point getBarCenter() {

@@ -55,7 +55,7 @@ Web Service Agent
 1. Execute the GeoSpace application.
 2. Access the GeoSpace WSDL at: http://localhost:10508/AgentService?wsdl
 3. Implement the getLastGameState method. Note that this method will need to be polled and
-   will be updated so faster than approximately 60Hz.
+   will be updated no faster than approximately 60Hz.
 4. Click on the desired player until the "Unconnected Service Agent" is listed.
 5. Click on the Start button.
 6. When the program state that it is waiting for agents to connect execute your application.

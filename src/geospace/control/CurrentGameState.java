@@ -79,4 +79,14 @@ public class CurrentGameState {
     public void setField(FieldInformation field) {
         // Method disabled
     }    
+    
+    public ShipInformation getShipInformation(String id) {
+        for(ShipInformation shipInformation : this.ships) {
+            if(shipInformation.getId().equals(id)) {
+                return shipInformation;
+            }
+        }
+        
+        return null;
+    }
 }
