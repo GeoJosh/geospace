@@ -12,14 +12,15 @@ public class Main {
 
     private final static String ARG_NOSOUND = "--nosound";
     private final static String ARG_FULLSCREEN = "--fullscreen";
+    private final static String ARG_ALWAYSRENDER= "--alwaysrender";
     
     public static void main(String[] args) {
         List<String> argsList = Arrays.asList(args);
-        parseArgs(argsList);
         
         try {
             WrapperAwareGame wag = new GeoSpace("GeoSpace");
             AppGameContainer container = new AppGameContainer(wag);
+            parseArgs(container, argsList);
             wag.setGameWrapper(container);
             
             container.setDisplayMode(container.getScreenWidth(), container.getScreenHeight(), argsList.contains(ARG_FULLSCREEN));
@@ -30,10 +31,14 @@ public class Main {
         }
     }
     
-    private static void parseArgs(List<String> args) {
+    private static void parseArgs(AppGameContainer container, List<String> args) {
         for(String arg : args) {
             if(ARG_NOSOUND.equalsIgnoreCase(arg)) {
                 AudioManager.getInstance().setManagerEnabled(false);
+            }
+            
+            if(ARG_ALWAYSRENDER.equalsIgnoreCase(arg)) {
+                container.setAlwaysRender(true);
             }
         }
     }

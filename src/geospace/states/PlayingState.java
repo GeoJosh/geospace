@@ -2,6 +2,7 @@ package geospace.states;
 
 import geospace.GeoSpace;
 import geospace.audio.AudioManager;
+import geospace.entity.GeoSpaceException;
 import geospace.render.EffectManager;
 import geospace.control.agent.AbstractAgent;
 import geospace.control.CurrentGameState;
@@ -87,9 +88,14 @@ public class PlayingState extends BasicGameState {
         AudioManager.getInstance().playRandomMusic(false);
 
         for (Player player : this.players) {
-            player.setShip(
-                    this.spawnShip(
-                    new Ship(player.getAgent(), 0, 0, 0, player.getPlayerColor())));
+            try {
+                player.setShip(
+                        this.spawnShip(
+                        new Ship(player.getAgent(), 0, 0, 0, player.getPlayerColor())));
+            } catch (GeoSpaceException ex) {
+                Logger.getLogger(PlayingState.class.getName()).log(Level.SEVERE, null, ex);
+                throw new SlickException("Unable to instantiate Ship with agent " + player.getAgent().getAgentName());
+            }
 
             Thread playerThread = new Thread(player);
             playerThreads.add(playerThread);
