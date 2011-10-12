@@ -134,20 +134,20 @@ public class Ship extends CollidableEntityModel {
 
     public void updateLocation(ControllerState state) {
 
-        this.updateHeading(state.isTurningPort(), state.isTurningStarboard());
-        this.updateVelocity(state.isThrusting());
+        this.updateHeading(state.isTurningPort(), state.isTurningStarboard(), state.isTurbo());
+        this.updateVelocity(state.isThrusting(), state.isTurbo());
         this.updatePosition(this.velocity);
 
         this.updateShape();
     }
 
-    private void updateHeading(boolean turningPort, boolean turningStarboard) {
+    private void updateHeading(boolean turningPort, boolean turningStarboard, boolean turboActivated) {
         if (turningPort) {
-            this.heading = (this.heading - Constants.SHIP_TURN_VELOCITY) % Ship.TWOPI;
+            this.heading = (this.heading - (turboActivated ? Constants.SHIP_TURN_VELOCITY_TURBO : Constants.SHIP_TURN_VELOCITY)) % Ship.TWOPI;
         }
 
         if (turningStarboard) {
-            this.heading = (this.heading + Constants.SHIP_TURN_VELOCITY) % Ship.TWOPI;
+            this.heading = (this.heading + (turboActivated ? Constants.SHIP_TURN_VELOCITY_TURBO : Constants.SHIP_TURN_VELOCITY)) % Ship.TWOPI;
         }
 
         if (turningPort || turningStarboard) {
@@ -155,10 +155,10 @@ public class Ship extends CollidableEntityModel {
         }
     }
 
-    private void updateVelocity(boolean isAccelerating) {
+    private void updateVelocity(boolean isAccelerating, boolean turboActivated) {
         if (isAccelerating && this.velocity.length() < Bullet.VELOCITY) {
-            this.velocity.x += Constants.SHIP_ACCELERATION * FastTrig.cos(this.heading);
-            this.velocity.y += Constants.SHIP_ACCELERATION * FastTrig.sin(this.heading);
+            this.velocity.x += (turboActivated ? Constants.SHIP_ACCELERATION_TURBO : Constants.SHIP_ACCELERATION) * FastTrig.cos(this.heading);
+            this.velocity.y += (turboActivated ? Constants.SHIP_ACCELERATION_TURBO : Constants.SHIP_ACCELERATION) * FastTrig.sin(this.heading);
         }
 
         if (Math.abs(this.velocity.x) > Constants.DRAG_DECELERATION) {
@@ -197,6 +197,7 @@ public class Ship extends CollidableEntityModel {
 
         if (entity instanceof Bullet) {
             if (this.isShielding() && (this.getShipShield().contains(entity.getShape()) || this.getShipShield().intersects(entity.getShape()))) {
+                entity.state = EntityState.DEAD;
                 return false;
             }
 

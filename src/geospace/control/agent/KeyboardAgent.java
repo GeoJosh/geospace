@@ -21,6 +21,7 @@ public class KeyboardAgent extends AbstractInputAgent {
         this.agentController.setTurningStarboard(this.input.isKeyDown(Input.KEY_RIGHT));
         this.agentController.setShielding(this.input.isKeyDown(Input.KEY_LSHIFT) || this.input.isKeyDown(Input.KEY_RSHIFT));
         this.agentController.setFiring(this.input.isKeyDown(Input.KEY_SPACE));
+        this.agentController.setTurbo(this.input.isKeyDown(Input.KEY_TAB));
         }
     }
 }

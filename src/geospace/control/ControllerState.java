@@ -6,6 +6,7 @@ public class ControllerState {
     private boolean turningStarboard;
     private boolean shielding;
     private boolean firing;
+    private boolean turbo;
 
     public ControllerState() {
         this.thrusting = false;
@@ -13,14 +14,16 @@ public class ControllerState {
         this.turningStarboard = false;
         this.shielding = false;
         this.firing = false;
+        this.turbo = false;
     }
 
-    public ControllerState(boolean isThrusting, boolean isTurningPort, boolean isTurningStarboard, boolean isShielding, boolean isFiring) {
+    public ControllerState(boolean isThrusting, boolean isTurningPort, boolean isTurningStarboard, boolean isShielding, boolean isFiring, boolean isTurbo) {
         this.thrusting = isThrusting;
         this.turningPort = isTurningPort;
         this.turningStarboard = isTurningStarboard;
         this.shielding = isShielding;
         this.firing = isFiring;
+        this.turbo = isTurbo;
     }
 
     public boolean isFiring() {
@@ -62,4 +65,13 @@ public class ControllerState {
     public void setTurningStarboard(boolean turningStarboard) {
         this.turningStarboard = turningStarboard;
     }
+
+    public boolean isTurbo() {
+        return turbo;
+    }
+
+    public void setTurbo(boolean turbo) {
+        this.turbo = turbo;
+    }
+
 }

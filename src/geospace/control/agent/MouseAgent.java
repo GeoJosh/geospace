@@ -15,24 +15,21 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class MouseAgent extends AbstractInputAgent implements MouseListener {
 
-    private Point lastPosition;
     private Point waypoint;
     private Vector2f velocityVector;
     private Vector2f waypointVelocityVector;
-    private static final float TWOPI = 2 * (float) Math.PI;
-    private static final float HEADING_CLOSE_ENOUGH = Constants.SHIP_TURN_VELOCITY * 2;
     
     private static final float DISTANCE_COEFFICIENT = (float) ((2 * Constants.SHIP_ACCELERATION * Constants.DRAG_DECELERATION) / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION));
     private static final float VELOCITY_COEFFICIENT = (float) (Constants.DRAG_DECELERATION / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION)); 
+    
+    private static final float SHIP_TURN_VELOCITY_DEGREE = (float)Math.toDegrees(Constants.SHIP_TURN_VELOCITY);
+    private static final float SHIP_TURN_VELOCITY_TURBO_DEGREE = (float)Math.toDegrees(Constants.SHIP_TURN_VELOCITY_TURBO);
 
     public MouseAgent() {
         super();
 
         this.agentName = "Mouse Agent";
         this.agentDescription = "A test agent that uses input from the mouse to control the player.";
-
-        this.lastPosition = null;
-        this.velocityVector = new Vector2f(0, 0);
 
         this.waypoint = new Point(0, 0);
         this.waypointVelocityVector = new Vector2f(0, 0);
@@ -41,33 +38,62 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
     @Override
     public void informGameState(CurrentGameState cgs) {
         ShipInformation shipInformation = cgs.getShipInformation(agentId);
-        if (this.lastPosition == null) {
-            this.lastPosition = new Point(0, 0);
-        } else if (shipInformation != null && this.velocityVector != null) {
-            this.velocityVector.x = shipInformation.getCenterX() - this.lastPosition.getX();
-            this.velocityVector.y = shipInformation.getCenterY() - this.lastPosition.getY();
-        }
         
-        this.lastPosition.setXY(shipInformation.getCenterX(), shipInformation.getCenterY());
-        this.waypointVelocityVector.x = calculateWaypointTargetVelocity(this.waypoint.getX() - shipInformation.getCenterX(), this.velocityVector.x);
-        this.waypointVelocityVector.y = calculateWaypointTargetVelocity(this.waypoint.getY() - shipInformation.getCenterY(), this.velocityVector.y);
+        if(shipInformation != null) {
+            this.velocityVector = new Vector2f(shipInformation.getVelocityX(), shipInformation.getVelocityY());
 
-        double targetHeading = this.waypointVelocityVector.getTheta();
-//        System.out.println(this.velocityVector.length());
-        double currentHeading = this.velocityVector.length() > 0 ? this.velocityVector.getTheta() : ((shipInformation.getHeading() * 360) / TWOPI) % 360;
-        double headingDiff = currentHeading - targetHeading;
-        
-        headingDiff = headingDiff > 180 ? headingDiff - 360 : headingDiff < -180 ? headingDiff + 360 : headingDiff;
-//        System.out.println(currentHeading + " " + targetHeading + " " + headingDiff);
+            this.waypointVelocityVector.x = this.waypoint.getX() - shipInformation.getCenterX();
+            this.waypointVelocityVector.y = this.waypoint.getY() - shipInformation.getCenterY();
 
-        this.agentController.setTurningPort(headingDiff > 0 && headingDiff > Constants.SHIP_TURN_VELOCITY);
-        this.agentController.setTurningStarboard(headingDiff < 0 && headingDiff < -Constants.SHIP_TURN_VELOCITY);
+//            this.waypointVelocityVector.x = calculateWaypointTargetVelocity(this.waypoint.getX() - shipInformation.getCenterX(), this.velocityVector.x);
+//            this.waypointVelocityVector.y = calculateWaypointTargetVelocity(this.waypoint.getY() - shipInformation.getCenterY(), this.velocityVector.y);
 
-        if(Math.abs(headingDiff) < HEADING_CLOSE_ENOUGH) {
-            this.agentController.setThrusting(true);
-        }
-        else {
-            this.agentController.setThrusting(false);
+            double targetHeading = this.waypointVelocityVector.getTheta();
+            double currentHeading = Constants.radiansToDegrees(shipInformation.getHeading());
+            double headingDiff = targetHeading - currentHeading;
+
+            headingDiff = headingDiff > 180 ? headingDiff - 360 : headingDiff < -180 ? headingDiff + 360 : headingDiff;
+            System.out.println(targetHeading + " " + currentHeading + " " + headingDiff);
+
+            if(headingDiff < 0) {
+                this.agentController.setTurningStarboard(false);
+
+                if(headingDiff < -SHIP_TURN_VELOCITY_TURBO_DEGREE) {
+                    this.agentController.setTurbo(true);
+                    this.agentController.setTurningPort(true);
+                }
+                else if(headingDiff < -SHIP_TURN_VELOCITY_DEGREE) {
+                    this.agentController.setTurbo(false);
+                    this.agentController.setTurningPort(true);
+                }
+                else {
+                    this.agentController.setTurningPort(false);
+                }
+            }
+            else if(headingDiff > 0) {
+                this.agentController.setTurningPort(false);
+                
+                if(headingDiff > 2 * SHIP_TURN_VELOCITY_TURBO_DEGREE) {
+                    this.agentController.setTurbo(true);
+                    this.agentController.setTurningStarboard(true);
+                }
+                else if(headingDiff > SHIP_TURN_VELOCITY_DEGREE) {
+                    this.agentController.setTurbo(false);
+                    this.agentController.setTurningStarboard(true);
+                } 
+                else {
+                    this.agentController.setTurningStarboard(false);
+                }
+            }
+            
+            System.out.println(this.agentController.isTurningPort() + " " + this.agentController.isTurningStarboard()+ " " + this.agentController.isTurbo());
+
+            if(!this.agentController.isTurningPort() && !this.agentController.isTurningStarboard()) {
+                this.agentController.setThrusting(true);
+            }
+            else {
+                this.agentController.setThrusting(false);
+            }
         }
     }
 
