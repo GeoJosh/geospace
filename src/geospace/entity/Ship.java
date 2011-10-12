@@ -1,5 +1,6 @@
 package geospace.entity;
 
+import geospace.PropertyManager;
 import geospace.control.agent.AbstractAgent;
 import geospace.control.ControllerState;
 import java.util.Collections;
@@ -123,12 +124,15 @@ public class Ship extends CollidableEntityModel {
             Bullet firedBullet = new Bullet(new Point(this.center), this.heading, this.color);
             firedBullet.update();
             this.bullets.add(firedBullet);
-            this.energy -= Constants.SHIP_ENERGY_COST_FIRE;
+            
+            if(!PropertyManager.getInstance().getBoolean("development")) {
+                this.energy -= Constants.SHIP_ENERGY_COST_FIRE;
+            }
         }
 
         this.shielding = controllerState.isShielding() && this.energy >= Constants.SHIP_ENERGY_COST_SHIELD;
-        if (this.shielding) {
-            //this.energy -= Constants.SHIP_ENERGY_COST_SHIELD;
+        if (this.shielding && !PropertyManager.getInstance().getBoolean("development")) {
+            this.energy -= Constants.SHIP_ENERGY_COST_SHIELD;
         }
     }
 

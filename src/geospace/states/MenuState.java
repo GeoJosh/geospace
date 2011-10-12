@@ -1,6 +1,7 @@
 package geospace.states;
 
 import geospace.GeoSpace;
+import geospace.PropertyManager;
 import geospace.control.agent.AbstractAgent;
 import geospace.control.agent.AbstractInputAgent;
 import geospace.control.agent.service.ServiceAgentManager;
@@ -10,8 +11,6 @@ import geospace.gui.GUIManager;
 import geospace.gui.WidgetPlayerSelector;
 import geospace.render.EffectManager;
 import geospace.states.PlayingState.GameMode;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.newdawn.slick.Color;
@@ -89,25 +87,20 @@ public class MenuState extends BasicGameState {
     }
 
     private Map<String, String> getAgentClasses() {
-        Properties props = new Properties();
         Map<String, String> classes = new HashMap<String, String>();
-        try {
-            props.load(new FileInputStream("./resources/geospace.properties"));
-            for (String className : props.getProperty("agents").split(",")) {
-                AbstractAgent agent = this.instantiateAgentClass(className);
-                if (agent != null) {
-                    try {
-                        new Ship(agent, 0, 0, 0, Color.black);
-                        classes.put(className, agent.getAgentName());
-                    } catch (GeoSpaceException ex) {
-                        Logger.getLogger(MenuState.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+        for (String className : PropertyManager.getInstance().getProperty("agents").split(",")) {
+            AbstractAgent agent = this.instantiateAgentClass(className);
+            if (agent != null) {
+                try {
+                    new Ship(agent, 0, 0, 0, Color.black);
+                    classes.put(className, agent.getAgentName());
+                } catch (GeoSpaceException ex) {
+                    Logger.getLogger(MenuState.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
             }
-        } catch (IOException ex) {
-            Logger.getLogger(MenuState.class.getName()).log(Level.SEVERE, null, ex);
+
         }
+
         return classes;
     }
 

@@ -21,6 +21,9 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
     
     private static final float DISTANCE_COEFFICIENT = (float) ((2 * Constants.SHIP_ACCELERATION * Constants.DRAG_DECELERATION) / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION));
     private static final float VELOCITY_COEFFICIENT = (float) (Constants.DRAG_DECELERATION / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION)); 
+
+    private static final float DISTANCE_COEFFICIENT_TURBO = (float) ((2 * Constants.SHIP_ACCELERATION_TURBO * Constants.DRAG_DECELERATION) / (Constants.SHIP_ACCELERATION_TURBO + Constants.DRAG_DECELERATION));
+    private static final float VELOCITY_COEFFICIENT_TURBO = (float) (Constants.DRAG_DECELERATION / (Constants.SHIP_ACCELERATION_TURBO + Constants.DRAG_DECELERATION)); 
     
     private static final float SHIP_TURN_VELOCITY_DEGREE = (float)Math.toDegrees(Constants.SHIP_TURN_VELOCITY);
     private static final float SHIP_TURN_VELOCITY_TURBO_DEGREE = (float)Math.toDegrees(Constants.SHIP_TURN_VELOCITY_TURBO);
@@ -53,7 +56,6 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
             double headingDiff = targetHeading - currentHeading;
 
             headingDiff = headingDiff > 180 ? headingDiff - 360 : headingDiff < -180 ? headingDiff + 360 : headingDiff;
-            System.out.println(targetHeading + " " + currentHeading + " " + headingDiff);
 
             if(headingDiff < 0) {
                 this.agentController.setTurningStarboard(false);
@@ -86,8 +88,6 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
                 }
             }
             
-            System.out.println(this.agentController.isTurningPort() + " " + this.agentController.isTurningStarboard()+ " " + this.agentController.isTurbo());
-
             if(!this.agentController.isTurningPort() && !this.agentController.isTurningStarboard()) {
                 this.agentController.setThrusting(true);
             }

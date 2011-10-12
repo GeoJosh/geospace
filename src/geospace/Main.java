@@ -1,12 +1,8 @@
 package geospace;
 
 import geospace.audio.AudioManager;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.newdawn.slick.AppGameContainer;
@@ -27,19 +23,10 @@ public class Main {
             parseArgs(container, argsList);
             wag.setGameWrapper(container);
             
-            String containerWidth = null;
-            String containerHeight = null;
-
-            try {
-            Properties props = new Properties();
-                props.load(new FileInputStream("./resources/geospace.properties"));
-                containerWidth = props.getProperty("width");
-                containerHeight = props.getProperty("height");
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            container.setDisplayMode(containerWidth == null ? container.getScreenWidth() : Integer.valueOf(containerWidth), containerHeight == null ? container.getScreenHeight() : Integer.valueOf(containerHeight), argsList.contains(ARG_FULLSCREEN));
+            container.setDisplayMode(
+                    PropertyManager.getInstance().getInteger("width", container.getScreenWidth()),
+                    PropertyManager.getInstance().getInteger("height", container.getScreenHeight()),
+                    argsList.contains(ARG_FULLSCREEN));
             container.start();
         }
         catch (SlickException ex) {

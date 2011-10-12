@@ -1,5 +1,6 @@
 package geospace.render.elements;
 
+import geospace.PropertyManager;
 import geospace.render.FontManager;
 import geospace.render.FontManager.FontType;
 import org.newdawn.slick.Font;
@@ -27,7 +28,9 @@ public class TimerClock implements Runnable {
         try {
             while(this.timeLeft > 0) {
                 Thread.sleep(DELAY_VALUE);
-                this.timeLeft -= DELAY_VALUE;
+                if(!PropertyManager.getInstance().getBoolean("development")) {
+                    this.timeLeft -= DELAY_VALUE;
+                }
             }
         } catch (InterruptedException ex) {
         }
