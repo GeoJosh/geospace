@@ -198,6 +198,9 @@ public class Ship extends CollidableEntityModel {
 
     @Override
     public boolean collidesWith(EntityModel entity) {
+        if(entity.getState() == EntityState.DEAD) {
+            return false;
+        }
 
         if (entity instanceof Bullet) {
             if (this.isShielding() && (this.getShipShield().contains(entity.getShape()) || this.getShipShield().intersects(entity.getShape()))) {

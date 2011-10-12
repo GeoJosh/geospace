@@ -13,8 +13,8 @@ public class Constants {
 
     public static final int SHIP_MAX_ENERGY = 100000;
     public static final int SHIP_ENERGY_REGEN = Constants.SHIP_MAX_ENERGY / 5000;
-    public static final int SHIP_ENERGY_COST_FIRE = 1000;
-    public static final int SHIP_ENERGY_COST_SHIELD = 500;
+    public static final int SHIP_ENERGY_COST_FIRE = 500;
+    public static final int SHIP_ENERGY_COST_SHIELD = 1000;
     
     public static float radiansToDegrees(float angle) {
         double degrees = Math.toDegrees(angle) % 360;
