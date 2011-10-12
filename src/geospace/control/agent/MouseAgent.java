@@ -17,12 +17,13 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
 
     private Point lastPosition;
     private Point waypoint;
-    private float waypointTargetVelocity;
     private Vector2f velocityVector;
+    private Vector2f waypointVelocityVector;
     private static final float TWOPI = 2 * (float) Math.PI;
     private static final float HEADING_CLOSE_ENOUGH = Constants.SHIP_TURN_VELOCITY * 2;
-    private static final float VELOCITY_COEFFICIENT = (float) (Constants.SHIP_ACCELERATION * Math.sqrt((2 * Constants.DRAG_DECELERATION) / ((Constants.SHIP_ACCELERATION * Constants.SHIP_ACCELERATION) + (Constants.SHIP_ACCELERATION * Constants.DRAG_DECELERATION))));
-    private static final float DISTANCE_COEFFICIENT = (float) ((Constants.DRAG_DECELERATION) / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION));
+    
+    private static final float DISTANCE_COEFFICIENT = (float) ((2 * Constants.SHIP_ACCELERATION * Constants.DRAG_DECELERATION) / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION));
+    private static final float VELOCITY_COEFFICIENT = (float) (Constants.DRAG_DECELERATION / (Constants.SHIP_ACCELERATION + Constants.DRAG_DECELERATION)); 
 
     public MouseAgent() {
         super();
@@ -34,8 +35,7 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
         this.velocityVector = new Vector2f(0, 0);
 
         this.waypoint = new Point(0, 0);
-        this.waypointTargetVelocity = 0;
-        System.out.println(VELOCITY_COEFFICIENT);
+        this.waypointVelocityVector = new Vector2f(0, 0);
     }
 
     @Override
@@ -47,36 +47,28 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
             this.velocityVector.x = shipInformation.getCenterX() - this.lastPosition.getX();
             this.velocityVector.y = shipInformation.getCenterY() - this.lastPosition.getY();
         }
-
+        
         this.lastPosition.setXY(shipInformation.getCenterX(), shipInformation.getCenterY());
+        this.waypointVelocityVector.x = calculateWaypointTargetVelocity(this.waypoint.getX() - shipInformation.getCenterX(), this.velocityVector.x);
+        this.waypointVelocityVector.y = calculateWaypointTargetVelocity(this.waypoint.getY() - shipInformation.getCenterY(), this.velocityVector.y);
 
-        double targetHeading = new Vector2f(this.waypoint.getX() - shipInformation.getCenterX(), shipInformation.getCenterY() - this.waypoint.getY()).getTheta();
-        double currentHeading = (((TWOPI - shipInformation.getHeading()) / TWOPI) * 360) % 360;
-
+        double targetHeading = this.waypointVelocityVector.getTheta();
+//        System.out.println(this.velocityVector.length());
+        double currentHeading = this.velocityVector.length() > 0 ? this.velocityVector.getTheta() : ((shipInformation.getHeading() * 360) / TWOPI) % 360;
         double headingDiff = currentHeading - targetHeading;
+        
         headingDiff = headingDiff > 180 ? headingDiff - 360 : headingDiff < -180 ? headingDiff + 360 : headingDiff;
+//        System.out.println(currentHeading + " " + targetHeading + " " + headingDiff);
 
-        this.agentController.setTurningStarboard(headingDiff > 0 && headingDiff > Constants.SHIP_TURN_VELOCITY);
-        this.agentController.setTurningPort(headingDiff < 0 && headingDiff < -Constants.SHIP_TURN_VELOCITY);
+        this.agentController.setTurningPort(headingDiff > 0 && headingDiff > Constants.SHIP_TURN_VELOCITY);
+        this.agentController.setTurningStarboard(headingDiff < 0 && headingDiff < -Constants.SHIP_TURN_VELOCITY);
 
-        // TODO: Fix this
-        this.waypointTargetVelocity = Constants.SHIP_ACCELERATION * VELOCITY_COEFFICIENT * (float) Math.sqrt(Point.distance(this.lastPosition, this.waypoint));
-        if (this.waypointTargetVelocity > 0 && this.waypointTargetVelocity > this.velocityVector.length() + Constants.SHIP_ACCELERATION) {
+        if(Math.abs(headingDiff) < HEADING_CLOSE_ENOUGH) {
             this.agentController.setThrusting(true);
-        } else {
+        }
+        else {
             this.agentController.setThrusting(false);
         }
-
-//        if(this.waypointTargetVelocity != 0 && Math.abs(headingDiff) < HEADING_CLOSE_ENOUGH) {
-//            this.waypointTargetVelocity = Constants.SHIP_ACCELERATION * VELOCITY_COEFFICIENT * (float)Math.sqrt(Point.distance(this.lastPosition, this.waypoint));
-//
-//            if(this.velocityVector.length() < this.waypointTargetVelocity + Constants.SHIP_ACCELERATION) {
-//                this.agentController.setThrusting(true);
-//            } else {
-//                this.agentController.setThrusting(false);
-//                this.waypointTargetVelocity = 0;
-//            }
-//        }
     }
 
     @Override
@@ -85,6 +77,17 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
         input.addMouseListener(this);
     }
 
+    private float calculateWaypointTargetVelocity(float dt, float v0) {
+        double quadraticValue = Math.sqrt((DISTANCE_COEFFICIENT * Math.abs(dt)) + (VELOCITY_COEFFICIENT * v0 * v0));
+        
+        if(dt > 0) {
+            return -v0 + (float)quadraticValue;
+        }
+        else {
+            return -v0 - (float)quadraticValue;
+        }
+    }
+    
     public void mouseWheelMoved(int change) {
     }
 
@@ -115,10 +118,6 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
 
     public void mouseMoved(int oldx, int oldy, int newx, int newy) {
         this.waypoint.setXY(newx - PlayingState.BORDER_SIZE, newy - PlayingState.BORDER_SIZE - PlayingState.TITLE_HEIGHT);
-
-        if (this.lastPosition != null) {
-            this.waypointTargetVelocity = Constants.SHIP_ACCELERATION * VELOCITY_COEFFICIENT * (float) Math.sqrt(Point.distance(this.lastPosition, this.waypoint));
-        }
     }
 
     public void mouseDragged(int oldx, int oldy, int newx, int newy) {

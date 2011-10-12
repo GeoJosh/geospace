@@ -36,16 +36,18 @@ public class EntityManager {
     }
     
     public void addEntity(EntityModel entity) {
-        for(EntityModel collEntity: this.entities) {
-            if(collEntity instanceof CollidableEntityModel) {
-                ((CollidableEntityModel)collEntity).evaluateEntity(entity);
-                if (entity instanceof CollidableEntityModel) {
-                    ((CollidableEntityModel) entity).evaluateEntity(collEntity);
+        if(!this.entities.contains(entity)) {
+            for(EntityModel collEntity: this.entities) {
+                if(collEntity instanceof CollidableEntityModel) {
+                    ((CollidableEntityModel)collEntity).evaluateEntity(entity);
+                    if (entity instanceof CollidableEntityModel) {
+                        ((CollidableEntityModel) entity).evaluateEntity(collEntity);
+                    }
                 }
             }
-        }
 
-        this.entities.add(entity);
+            this.entities.add(entity);
+        }
     }
 
     public void addEntity(List<EntityModel> entities) {
@@ -74,8 +76,7 @@ public class EntityManager {
     }
 
     private void processEntities() {
-        for(EntityModel entity: this.entities) {
-            
+        for(EntityModel entity: this.entities) {          
             if (entity instanceof Field) {
                 processField((Field)entity);
             }
