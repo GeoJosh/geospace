@@ -2,7 +2,6 @@ package geospace.control.agent;
 
 import geospace.control.BulletInformation;
 import geospace.control.CurrentGameState;
-import geospace.control.CurrentGameState;
 import geospace.control.ShipInformation;
 import geospace.entity.Constants;
 import geospace.entity.Point;
@@ -45,11 +44,8 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
         if (shipInformation != null) {
             this.velocityVector = new Vector2f(shipInformation.getVelocityX(), shipInformation.getVelocityY());
 
-            this.waypointVelocityVector.x = this.waypoint.getX() - shipInformation.getCenterX();
-            this.waypointVelocityVector.y = this.waypoint.getY() - shipInformation.getCenterY();
-
-//            this.waypointVelocityVector.x = calculateWaypointTargetVelocity(this.waypoint.getX() - shipInformation.getCenterX(), this.velocityVector.x);
-//            this.waypointVelocityVector.y = calculateWaypointTargetVelocity(this.waypoint.getY() - shipInformation.getCenterY(), this.velocityVector.y);
+            this.waypointVelocityVector.x = calculateWaypointTargetVelocity(this.waypoint.getX() - shipInformation.getCenterX(), this.velocityVector.x);
+            this.waypointVelocityVector.y = calculateWaypointTargetVelocity(this.waypoint.getY() - shipInformation.getCenterY(), this.velocityVector.y);
 
             double targetHeading = this.waypointVelocityVector.getTheta();
             double currentHeading = Constants.radiansToDegrees(shipInformation.getHeading());
@@ -81,6 +77,7 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
                 this.agentController.setTurningPort(true);
             } else {
                 this.agentController.setTurningPort(false);
+                this.agentController.setTurbo(true);
             }
         } else if (headingDiff > 0) {
             this.agentController.setTurningPort(false);
@@ -93,6 +90,7 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
                 this.agentController.setTurningStarboard(true);
             } else {
                 this.agentController.setTurningStarboard(false);
+                this.agentController.setTurbo(true);
             }
         }
     }
@@ -121,7 +119,9 @@ public class MouseAgent extends AbstractInputAgent implements MouseListener {
     }
 
     private float calculateWaypointTargetVelocity(float dt, float v0) {
-        double quadraticValue = Math.sqrt((DISTANCE_COEFFICIENT * Math.abs(dt)) + (VELOCITY_COEFFICIENT * v0 * v0));
+        double quadraticValue = Math.sqrt(
+                ((this.agentController.isTurbo() ? DISTANCE_COEFFICIENT_TURBO : DISTANCE_COEFFICIENT) * Math.abs(dt)) +
+                ((this.agentController.isTurbo() ? VELOCITY_COEFFICIENT_TURBO : VELOCITY_COEFFICIENT) * v0 * v0));
 
         if (dt > 0) {
             return -v0 + (float) quadraticValue;
