@@ -10,8 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CurrentGameState {
-    private List<ShipInformation> ships;
-    private List<BulletInformation> bullets;
+
+    private final List<ShipInformation> ships;
+    private final List<BulletInformation> bullets;
     private FieldInformation field;
     private long timestamp;
     private int timeLeft;
@@ -22,21 +23,20 @@ public class CurrentGameState {
     }
 
     public void updateState(int timeLeft) {
+
         this.ships.clear();
         this.bullets.clear();
-        
-        for(EntityModel entity : EntityManager.getInstance().getEntities()) {
-            if(entity instanceof Ship) {
-                this.ships.add(new ShipInformation((Ship)entity));
-            }
-            else if(entity instanceof Bullet) {
-                this.bullets.add(new BulletInformation((Bullet)entity));
-            }
-            else if(entity instanceof Field) {
-                this.field = new FieldInformation((Field)entity);
+
+        for (EntityModel entity : EntityManager.getInstance().getEntities()) {
+            if (entity instanceof Ship) {
+                this.ships.add(new ShipInformation((Ship) entity));
+            } else if (entity instanceof Bullet) {
+                this.bullets.add(new BulletInformation((Bullet) entity));
+            } else if (entity instanceof Field) {
+                this.field = new FieldInformation((Field) entity);
             }
         }
-        
+
         this.timestamp = new Date().getTime();
     }
 
@@ -59,7 +59,7 @@ public class CurrentGameState {
     public long getTimestamp() {
         return this.timestamp;
     }
-    
+
     public void setTimestamp(long timestamp) {
         // Method disabled
     }
@@ -78,15 +78,15 @@ public class CurrentGameState {
 
     public void setField(FieldInformation field) {
         // Method disabled
-    }    
-    
+    }
+
     public ShipInformation getShipInformation(String id) {
-        for(ShipInformation shipInformation : this.ships) {
-            if(shipInformation.getId().equals(id)) {
+        for (ShipInformation shipInformation : this.ships) {
+            if (shipInformation.getId().equals(id)) {
                 return shipInformation;
             }
         }
-        
+
         return null;
     }
 }

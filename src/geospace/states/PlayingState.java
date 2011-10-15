@@ -151,8 +151,8 @@ public class PlayingState extends BasicGameState {
             this.currentGameState.updateState(this.timerClock.getTimeLeft());
             this.currentGameState.notifyAll();
         }
-
-        ServiceAgentManager.getInstance().setLastGameState(currentGameState);
+        
+        ServiceAgentManager.getInstance().updateGameState(this.timerClock.getTimeLeft());
     }
 
     private Ship spawnShip(Ship ship) {
