@@ -7,6 +7,7 @@ import geospace.states.LoadingState;
 import geospace.states.MenuState;
 import geospace.states.PlayingState;
 import geospace.states.WaitingState;
+import geospace.states.WinnerState;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 
@@ -18,6 +19,7 @@ public class GeoSpace extends WrapperAwareGame {
     public static final int MENU_STATE = 1;
     public static final int WAITING_STATE = 2;
     public static final int PLAYING_STATE = 3;
+    public static final int WINNER_STATE = 4;
     
     public GeoSpace(String title) {
         super(title);
@@ -26,6 +28,7 @@ public class GeoSpace extends WrapperAwareGame {
         this.addState(new MenuState(MENU_STATE));
         this.addState(new WaitingState(WAITING_STATE));
         this.addState(new PlayingState(PLAYING_STATE));
+        this.addState(new WinnerState(WINNER_STATE));
 
         this.enterState(LOADING_STATE);
     }

@@ -42,7 +42,6 @@ public class PlayingState extends BasicGameState {
     private Thread timerThread;
 
     public enum GameMode {
-
         DUEL,
         BATTLE_ROYALE
     }
@@ -187,7 +186,8 @@ public class PlayingState extends BasicGameState {
                 
                 if (this.timerThread.getState() == Thread.State.TERMINATED) {
                     if(this.players.get(0).getScore() != this.players.get(1).getScore()) {
-                        sbg.enterState(GeoSpace.MENU_STATE);
+                        ((WinnerState)sbg.getState(GeoSpace.WINNER_STATE)).setWinnerName(this.players.get(0).getScore() > this.players.get(1).getScore() ? this.players.get(0).getAgent().getAgentName() : this.players.get(1).getAgent().getAgentName());
+                        sbg.enterState(GeoSpace.WINNER_STATE);
                     }
                     else {
                         this.gameStage.shrinkStage(0.25f);
