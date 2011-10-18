@@ -12,25 +12,25 @@ Instructions
 
 To run the program from the command line execute the following:
 
-    java -Djava.library.path=./lib/native/[system type] -jar GeoSpace.jar
+    java -Djava.library.path=./native/[system type] -jar GeoSpace.jar
 
 Specifically for each supported architecture:
 
 Linux:
 
-    java -Djava.library.path=./lib/native/linux -jar GeoSpace.jar
+    java -Djava.library.path=./native/linux -jar GeoSpace.jar
 
 Mac OSX:
 
-    java -Djava.library.path=./lib/native/macosx -jar GeoSpace.jar
+    java -Djava.library.path=./native/macosx -jar GeoSpace.jar
 
 Solaris:
 
-    java -Djava.library.path=./lib/native/solaris -jar GeoSpace.jar
+    java -Djava.library.path=./native/solaris -jar GeoSpace.jar
 
 Windows:
 
-    java -Djava.library.path=./lib/native/windows -jar GeoSpace.jar
+    java -Djava.library.path=./native/windows -jar GeoSpace.jar
 
 =================
 Creating an Agent
@@ -69,3 +69,10 @@ Release History
 
 0.1
 Initial Release
+
+================
+Related Projects
+================
+
+geospace-repo: https://github.com/GeoJosh/geospace-repo
+Maven repository for GeoSpace artifacts and supporting libraries that lack existing Maven repositories.
