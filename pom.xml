@@ -10,7 +10,19 @@
 
     <name>geospace</name>
     <url>http://maven.apache.org</url>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -18,7 +30,7 @@
     <repositories>
         <repository>
             <id>geospace-repo</id>
-            <url>https://raw.github.com/GeoJosh/GeoSpace/master/maven</url>
+            <url>https://raw.github.com/GeoJosh/geospace-repo/master</url>
         </repository>
     </repositories>
 
