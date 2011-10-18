@@ -41,27 +41,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BulletInformation }
+     * Create an instance of {@link SetControllerStateResponse }
      * 
      */
-    public BulletInformation createBulletInformation() {
-        return new BulletInformation();
-    }
-
-    /**
-     * Create an instance of {@link ControllerState }
-     * 
-     */
-    public ControllerState createControllerState() {
-        return new ControllerState();
-    }
-
-    /**
-     * Create an instance of {@link GetLastGameState }
-     * 
-     */
-    public GetLastGameState createGetLastGameState() {
-        return new GetLastGameState();
+    public SetControllerStateResponse createSetControllerStateResponse() {
+        return new SetControllerStateResponse();
     }
 
     /**
@@ -70,6 +54,38 @@ public class ObjectFactory {
      */
     public FieldInformation createFieldInformation() {
         return new FieldInformation();
+    }
+
+    /**
+     * Create an instance of {@link GetLastGameStateResponse }
+     * 
+     */
+    public GetLastGameStateResponse createGetLastGameStateResponse() {
+        return new GetLastGameStateResponse();
+    }
+
+    /**
+     * Create an instance of {@link BulletInformation }
+     * 
+     */
+    public BulletInformation createBulletInformation() {
+        return new BulletInformation();
+    }
+
+    /**
+     * Create an instance of {@link SetControllerState }
+     * 
+     */
+    public SetControllerState createSetControllerState() {
+        return new SetControllerState();
+    }
+
+    /**
+     * Create an instance of {@link CurrentGameState }
+     * 
+     */
+    public CurrentGameState createCurrentGameState() {
+        return new CurrentGameState();
     }
 
     /**
@@ -89,19 +105,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetControllerState }
+     * Create an instance of {@link ShipInformation }
      * 
      */
-    public SetControllerState createSetControllerState() {
-        return new SetControllerState();
-    }
-
-    /**
-     * Create an instance of {@link SetControllerStateResponse }
-     * 
-     */
-    public SetControllerStateResponse createSetControllerStateResponse() {
-        return new SetControllerStateResponse();
+    public ShipInformation createShipInformation() {
+        return new ShipInformation();
     }
 
     /**
@@ -113,11 +121,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ShipInformation }
+     * Create an instance of {@link ControllerState }
      * 
      */
-    public ShipInformation createShipInformation() {
-        return new ShipInformation();
+    public ControllerState createControllerState() {
+        return new ControllerState();
     }
 
     /**
@@ -129,19 +137,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetLastGameStateResponse }
+     * Create an instance of {@link GetLastGameState }
      * 
      */
-    public GetLastGameStateResponse createGetLastGameStateResponse() {
-        return new GetLastGameStateResponse();
-    }
-
-    /**
-     * Create an instance of {@link CurrentGameState }
-     * 
-     */
-    public CurrentGameState createCurrentGameState() {
-        return new CurrentGameState();
+    public GetLastGameState createGetLastGameState() {
+        return new GetLastGameState();
     }
 
     /**
