@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>geospace</groupId>
-    <artifactId>geospace</artifactId>
+    <artifactId>geospace-server</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>geospace</name>
+    <name>geospace-server</name>
     <url>https://github.com/GeoJosh/geospace</url>
     
     <build>
@@ -22,6 +22,27 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>geospace.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <properties>
@@ -34,7 +55,7 @@
             <url>https://raw.github.com/GeoJosh/geospace-repo/master</url>
         </repository>
     </repositories>
-
+    
     <dependencies>
     
         <dependency>

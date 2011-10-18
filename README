@@ -1,78 +1,165 @@
 GeoSpace
 
+A 2-D space shooter framework with hooks for AI agents.
+
 ============
 Requirements
 ============
 
-Java Runtime Environment 1.6 or higher
+* Java Runtime Environment 1.6 or higher
+
+========
+Building
+========
+
+GeoSpace is distributed as several Maven projects which will resolve all dependencies to a custom
+artifact repository also hosted on GitHub. (https://github.com/GeoJosh/geospace-repo). When checking
+out the entire project the structure is as follows:
+
+    + /
+    |
+    +- /geospace-server    [ Main GeoSpace application. ]
+    |
+    +- /geospace-artifacts [ Project to generate Web Service artifacts from the GeoSpace WSDL. These artifacts are  ]
+    |                      [ stored in the GeoSpace repository as geospace-artifacts and should not need building.  ]
+    |
+    +- /geospace-remote    [ A proxy agent to communicate with GeoSpace via Web Services through an implemented ]
+                           [ AbstractAgent class from the geospace-artifacts project.                           ]                                                            ]
+
+The projects can be imported into most IDEs of your choice (Eclipse, Netbeans, etc.) and built using the IDE's
+inbuilt capabilities. Alternately if you have Maven installed you can build the projects from the command line by
+running the following:
+
+    mvn clean install
 
 ============
 Instructions
 ============
 
-To run the program from the command line execute the following:
+After building the geospace-server project you can run the main GeoSpace application from the command line by
+executing the following from the geospace-server project root:
 
-    java -Djava.library.path=./native/[system type] -jar GeoSpace.jar
+    java -Djava.library.path=./native/[system type] -jar target/geospace-server-1.0-jar-with-dependencies.jar
 
 Specifically for each supported architecture:
 
 Linux:
 
-    java -Djava.library.path=./native/linux -jar GeoSpace.jar
+    java -Djava.library.path=./native/linux -jar target/geospace-server-1.0-jar-with-dependencies.jar
 
 Mac OSX:
 
-    java -Djava.library.path=./native/macosx -jar GeoSpace.jar
+    java -Djava.library.path=./native/macosx -jar target/geospace-server-1.0-jar-with-dependencies.jar
 
 Solaris:
 
-    java -Djava.library.path=./native/solaris -jar GeoSpace.jar
+    java -Djava.library.path=./native/solaris -jar target/geospace-server-1.0-jar-with-dependencies.jar
 
 Windows:
 
-    java -Djava.library.path=./native/windows -jar GeoSpace.jar
+    java -Djava.library.path=./native/windows -jar target/geospace-server-1.0-jar-with-dependencies.jar
+
+Alternately, if the geospace-server project is imported into an IDE the application may be launched using the
+IDE's inbuilt capabilities as long as at launch time the system property "java.library.path" is set according to
+the system criteria above.
+
+For development or personal preference purposes the following flags are available to modify application behavior:
+
+    --alwaysrender
+    Always render the GeoSpace frame even when the window does not have focus.
+
+    --fullscreen
+    Execute the GeoSpace frame in full screen mode.
+
+    --nosound
+    Disable all music and sound effects.
 
 =================
 Creating an Agent
 =================
 
-----------
-Java Agent
-----------
-1. Implement a concrete class extending geospace.control.agent.AbstractAgent.
-2. Implement the informGameState method. Note that it can be assumed that this method
-   will be invoked at a rate of approximately 60Hz.
-3. Compile the agent jar and add it to the classpath.
-4. Add the full package and class name to the agents line of the geospace.properties file.
-5. Execute the GeoSpace application and click on the desired player until the agent is listed.
-6. Click on the Start button.
-7. As the program runs informGameState will be called each time the game state updates. As required modify the
-   class' agentController property to control your ship.
+An GeoSpace agent is piece of software which communicates with the GeoSpace server to control the corresponding player.
 
------------------
-Web Service Agent
------------------
-1. Execute the GeoSpace application.
-2. Access the GeoSpace WSDL at: http://localhost:10508/AgentService?wsdl
-3. Implement the getLastGameState method. Note that this method will need to be polled and
-   will be updated no faster than approximately 60Hz.
-4. Click on the desired player until the "Unconnected Service Agent" is listed.
-5. Click on the Start button.
-6. When the program state that it is waiting for agents to connect execute your application.
-7. Execute the connectAgent method noting the information that is returned.
-8. As the program runs execute getLastGameState to get the most recent game state and execute
-   setControllerState as necessary.
+There are currently three methods for developing a GeoSpace agent:
+
+1. Bundle the agent along with the geospace-server project by extending the AbstractAgent class and rebuilding the project.
+2. Implement an agent that directly communicates with the GeoSpace application via the Web Services interface.
+3. Implement an agent that communicates with the GeoSpace application via the proxy geospace-remote application.
+
+----------------
+1. Bundled Agent
+----------------
+
+An example of these agents can be found in the example KeyboardAgent and MouseAgent classes within the geospace-server project.
+
+    1. Implement a concrete class extending geospace.control.agent.AbstractAgent.
+
+    2. Implement the informGameState method. Note that it can be assumed that this method
+       will be invoked at a rate of approximately 60Hz.
+
+    3. Either rebuild the geospace-server application with the agent class or compile the
+       agent jar and add it to the classpath.
+
+    4. Add the full package and class name to the "agents" line of the geospace.properties file.
+
+    5. Execute the geospace-server application and click on the desired player until the agent is listed.
+
+    6. Click on the Start button.
+
+    7. As the program runs informGameState will be called each time the game state updates. As required modify the
+       class' agentController property to control your ship.
+
+--------------------
+2. Web Service Agent
+--------------------
+
+    1. Access the GeoSpace WSDL at: http://localhost:10508/AgentService?wsdl
+
+    2. Implement the getLastGameState method. Note that this method will need to be polled and
+       will be updated no faster than approximately 60Hz.
+
+    3. Execute the geospace-server application.
+
+    4. Click on the desired player until the "Unconnected Service Agent" is listed.
+
+    5. Click on the Start button.
+
+    6. When the program states that it is waiting for agents to connect execute your application.
+
+    7. Execute the connectAgent method noting the authentication token that is returned.
+
+    8. As the program runs execute getLastGameState to get the most recent game state and execute
+       setControllerState as necessary.
+
+--------------
+3. Proxy Agent
+--------------
+
+    1. Add the geospace-artifacts Maven artifact to your project.
+
+    2. Implement a concrete class extending geospace.control.agent.AbstractAgent.
+
+    3. Implement the informGameState method. Note that it can be assumed that this method
+       will be invoked at a rate of approximately 60Hz.
+
+    4. Execute the geospace-server application.
+
+    5. Click on the desired player until the "Unconnected Service Agent" is listed.
+
+    6. Click on the Start button.
+
+    7. When the program states that it is waiting for agents to connect execute the geospace-remote application.
+       Ensure that the compiled agent jar is on the classpath for the geospace-remote applications and pass the
+       full package name and class as an argument. For example:
+
+       java -jar geospace-remote-1.0.jar geospace.control.agent.MyAgentClass
+
+    8. As the program runs informGameState will be called each time the proxy detects a new game state update.
+       As required modify the class' agentController property to control your ship.
 
 ===============
 Release History
 ===============
 
-0.1
+1.0
 Initial Release
-
-================
-Related Projects
-================
-
-geospace-repo: https://github.com/GeoJosh/geospace-repo
-Maven repository for GeoSpace artifacts and supporting libraries that lack existing Maven repositories.

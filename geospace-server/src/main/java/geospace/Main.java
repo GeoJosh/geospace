@@ -10,9 +10,9 @@ import org.newdawn.slick.SlickException;
 
 public class Main {
 
-    private final static String ARG_NOSOUND = "--nosound";
-    private final static String ARG_FULLSCREEN = "--fullscreen";
     private final static String ARG_ALWAYSRENDER= "--alwaysrender";
+    private final static String ARG_FULLSCREEN = "--fullscreen";
+    private final static String ARG_NOSOUND = "--nosound";
     
     public static void main(String[] args) {
         List<String> argsList = Arrays.asList(args);
