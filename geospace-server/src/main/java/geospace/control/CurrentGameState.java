@@ -11,8 +11,8 @@ import java.util.List;
 
 public class CurrentGameState {
 
-    private final List<ShipInformation> ships;
-    private final List<BulletInformation> bullets;
+    private List<ShipInformation> ships;
+    private List<BulletInformation> bullets;
     private FieldInformation field;
     private long timestamp;
     private int timeLeft;
@@ -23,20 +23,22 @@ public class CurrentGameState {
     }
 
     public void updateState(int timeLeft) {
-
-        this.ships.clear();
-        this.bullets.clear();
+        List<ShipInformation> iterShips = new LinkedList<ShipInformation>();
+        List<BulletInformation> iterBullets = new LinkedList<BulletInformation>();
 
         for (EntityModel entity : EntityManager.getInstance().getEntities()) {
             if (entity instanceof Ship) {
-                this.ships.add(new ShipInformation((Ship) entity));
+                iterShips.add(new ShipInformation((Ship) entity));
             } else if (entity instanceof Bullet) {
-                this.bullets.add(new BulletInformation((Bullet) entity));
+                iterBullets.add(new BulletInformation((Bullet) entity));
             } else if (entity instanceof Field) {
                 this.field = new FieldInformation((Field) entity);
             }
         }
 
+        this.ships = iterShips;
+        this.bullets = iterBullets;
+        
         this.timestamp = new Date().getTime();
     }
 

@@ -18,13 +18,24 @@ out the entire project the structure is as follows:
 
     + /
     |
-    +- /geospace-server    [ Main GeoSpace application. ]
+    +--- /geospace-server    [ Main GeoSpace application. ]
     |
-    +- /geospace-artifacts [ Project to generate Web Service artifacts from the GeoSpace WSDL. These artifacts are  ]
-    |                      [ stored in the GeoSpace repository as geospace-artifacts and should not need building.  ]
     |
-    +- /geospace-remote    [ A proxy agent to communicate with GeoSpace via Web Services through an implemented ]
-                           [ AbstractAgent class from the geospace-artifacts project.                           ]                                                            ]
+    +-+- /geospace-artifacts [ Project to generate Web Service artifacts from the GeoSpace WSDL. These artifacts are  ]
+    | |                      [ stored in the GeoSpace repository as geospace-artifacts and should not need building.  ]
+    | |
+    | +-+- /examples
+    |   |
+    |   +-- /geospace-artifacts-example [ An example implementation of the TargetingAgent utilizing the GeoSpace ]
+    |                                   [ Web Service artifacts from the geospace-artifacts project.             ]
+    |
+    +-+- /geospace-remote    [ A proxy agent to communicate with GeoSpace via Web Services through an implemented ]
+      |                      [ AbstractAgent class from the geospace-artifacts project.                           ]
+      |
+      +-+- /examples
+        |
+        +-- /geospace-remote-example    [ An example implementation of the TargetingAgent utilizing for use in ]
+                                        [ conjunction with the geospace-remote proxy project.                  ]
 
 The projects can be imported into most IDEs of your choice (Eclipse, Netbeans, etc.) and built using the IDE's
 inbuilt capabilities. Alternately if you have Maven installed you can build the projects from the command line by
@@ -90,7 +101,8 @@ There are currently three methods for developing a GeoSpace agent:
 1. Bundled Agent
 ----------------
 
-An example of these agents can be found in the example KeyboardAgent and MouseAgent classes within the geospace-server project.
+An example of these agents can be found in the example KeyboardAgent, MouseAgent, and TargetingAgentclasses within
+the geospace-server project.
 
     1. Implement a concrete class extending geospace.control.agent.AbstractAgent.
 
@@ -113,7 +125,10 @@ An example of these agents can be found in the example KeyboardAgent and MouseAg
 2. Web Service Agent
 --------------------
 
-    1. Access the GeoSpace WSDL at: http://localhost:10508/AgentService?wsdl
+An example of these agents can be found in within the geospace-artifacts-example project.
+
+    1. Access the GeoSpace WSDL at: http://localhost:10508/AgentService?wsdl or add the
+       geospace-artifacts Maven artifact to your project.
 
     2. Implement the getLastGameState method. Note that this method will need to be polled and
        will be updated no faster than approximately 60Hz.
@@ -134,6 +149,8 @@ An example of these agents can be found in the example KeyboardAgent and MouseAg
 --------------
 3. Proxy Agent
 --------------
+
+An example of these agents can be found in within the geospace-remote-example project.
 
     1. Add the geospace-artifacts Maven artifact to your project.
 
