@@ -42,6 +42,7 @@ public class PlayingState extends BasicGameState {
     private Thread timerThread;
 
     public enum GameMode {
+
         DUEL,
         BATTLE_ROYALE
     }
@@ -100,8 +101,8 @@ public class PlayingState extends BasicGameState {
         }
 
         initializeGameMode();
-        
-        this.timerClock = new TimerClock(PropertyManager.getInstance().getInteger("timelimit", 180), this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
+
+        this.timerClock = new TimerClock(PropertyManager.getInstance().getInteger("game.timelimit", 180), this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
         this.timerThread = new Thread(this.timerClock);
         this.timerThread.start();
     }
@@ -150,7 +151,7 @@ public class PlayingState extends BasicGameState {
             this.currentGameState.updateState(this.timerClock.getTimeLeft());
             this.currentGameState.notifyAll();
         }
-        
+
         ServiceAgentManager.getInstance().updateGameState(this.timerClock.getTimeLeft());
     }
 
@@ -160,7 +161,7 @@ public class PlayingState extends BasicGameState {
         ship.resetShip(
                 100 + (randomGenerator.nextFloat() * (this.gameStage.getStageWidth() - 200)),
                 100 + (randomGenerator.nextFloat() * (this.gameStage.getStageHeight() - 200)),
-                randomGenerator.nextFloat() * (float)(2 * Math.PI));
+                randomGenerator.nextFloat() * (float) (2 * Math.PI));
 
         EntityManager.getInstance().addEntity(ship);
         EffectManager.getInstance().renderSpawn(ship.getCenter().getX(), ship.getCenter().getY());
@@ -179,39 +180,64 @@ public class PlayingState extends BasicGameState {
     }
 
     private void updateGameMode(StateBasedGame sbg) {
-        switch (this.currentGameMode) {
-            case DUEL:
-                updatePlayer(this.players.get(0), this.players.get(1));
-                updatePlayer(this.players.get(1), this.players.get(0));
-                
-                if (this.timerThread.getState() == Thread.State.TERMINATED) {
-                    if(this.players.get(0).getScore() != this.players.get(1).getScore()) {
-                        ((WinnerState)sbg.getState(GeoSpace.WINNER_STATE)).setWinnerName(this.players.get(0).getScore() > this.players.get(1).getScore() ? this.players.get(0).getAgent().getAgentName() : this.players.get(1).getAgent().getAgentName());
-                        sbg.enterState(GeoSpace.WINNER_STATE);
-                    }
-                    else {
-                        this.gameStage.shrinkStage(0.25f);
-                    }
-                }
-                break;
+        updatePlayer(this.players);
+
+        if (this.timerThread.getState() == Thread.State.TERMINATED) {
+            Player winner = this.getWinner(this.players);
+            if (winner != null) {
+                ((WinnerState) sbg.getState(GeoSpace.WINNER_STATE)).setWinnerName(winner.getAgent().getAgentName());
+                sbg.enterState(GeoSpace.WINNER_STATE);
+            } else {
+                this.gameStage.shrinkStage(0.25f);
+            }
         }
     }
 
-    private void updatePlayer(Player player, Player enemy) {
-        if (player.getShip().getState() == EntityState.DEAD) {
-            enemy.updateScore();
-            this.spawnShip(player.getShip());
+    private Player getWinner(List<Player> players) {
+        int maxScore = 0;
+        for (Player player : players) {
+            maxScore = player.getScore() > maxScore ? player.getScore() : maxScore;
+        }
+
+        if (maxScore == 0) {
+            return null;
+        }
+
+        Player winner = null;
+        for (Player player : players) {
+            if (player.getScore() == maxScore) {
+                if (winner == null) {
+                    winner = player;
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return winner;
+    }
+
+    private void updatePlayer(List<Player> players) {
+        for (Player player : players) {
+            if (player.getShip().getState() == EntityState.DEAD) {
+                for (Player enemy : players) {
+                    if(enemy != player) {
+                        enemy.updateScore();
+                    }
+                }
+                
+                if (this.timerThread.getState() != Thread.State.TERMINATED) {
+                    this.spawnShip(player.getShip());
+                }
+            }
         }
     }
 
     private void renderGameMode(Graphics graphics) {
-        switch (this.currentGameMode) {
-            case DUEL:
-                for (Player player : this.players) {
-                    DrawManager.getInstance().renderPlayerInfo(graphics, player);
-                }
-                
-                break;
+        for (Player player : this.players) {
+            if (player.getShip().getState() != EntityState.DEAD) {
+                DrawManager.getInstance().renderPlayerInfo(graphics, player);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import geospace.GeoSpace;
 import geospace.PropertyManager;
 import geospace.control.agent.AbstractAgent;
 import geospace.control.agent.AbstractInputAgent;
+import geospace.control.agent.service.ServiceAgent;
 import geospace.control.agent.service.ServiceAgentManager;
 import geospace.entity.GeoSpaceException;
 import geospace.entity.Ship;
@@ -88,7 +89,7 @@ public class MenuState extends BasicGameState {
 
     private Map<String, String> getAgentClasses() {
         Map<String, String> classes = new HashMap<String, String>();
-        for (String className : PropertyManager.getInstance().getProperty("agents").split(",")) {
+        for (String className : PropertyManager.getInstance().getProperty("system.agents").split(",")) {
             AbstractAgent agent = this.instantiateAgentClass(className);
             if (agent != null) {
                 try {
@@ -136,6 +137,8 @@ public class MenuState extends BasicGameState {
     }
 
     private void initializeGameMode(StateBasedGame sbg, GameContainer gc, GameMode gameMode) {
+        ((PlayingState) sbg.getState(GeoSpace.PLAYING_STATE)).setCurrentGameMode(gameMode);
+        
         switch (gameMode) {
             case DUEL:
                 ((PlayingState) sbg.getState(GeoSpace.PLAYING_STATE)).setPlayerControllers(
@@ -145,8 +148,14 @@ public class MenuState extends BasicGameState {
                 break;
             case BATTLE_ROYALE:
                 List<AbstractAgent> agents = new LinkedList<AbstractAgent>();
+                for(int i=0; i < PropertyManager.getInstance().getInteger("game.royale.service.slots", 2); i++) {
+                    agents.add(this.initializeAgent(gc, new ServiceAgent()));
+                }
+                
                 for (Entry<String, String> agentEntry : this.agentClasses.entrySet()) {
-                    agents.add(this.initializeAgent(gc, this.instantiateAgentClass(agentEntry.getKey())));
+                    if(!agentEntry.getKey().equals(ServiceAgent.class.getName())) {
+                        agents.add(this.initializeAgent(gc, this.instantiateAgentClass(agentEntry.getKey())));
+                    }
                 }
 
                 ((PlayingState) sbg.getState(GeoSpace.PLAYING_STATE)).setPlayerControllers(agents);

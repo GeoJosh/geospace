@@ -39,7 +39,7 @@ public class Main {
                 } else {
                     this.lastGameState = this.endpoint.getLastGameState();
 
-                    if (this.opponentId.isEmpty()) {
+                    if (this.opponentId.isEmpty() || getShipInformation(this.lastGameState, this.opponentId) == null) {
                         for (ShipInformation info : this.lastGameState.getShips()) {
                             if (!info.getId().equals(this.agentId)) {
                                 this.opponentId = info.getId();

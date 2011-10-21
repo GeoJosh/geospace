@@ -125,13 +125,13 @@ public class Ship extends CollidableEntityModel {
             firedBullet.update();
             this.bullets.add(firedBullet);
             
-            if(!PropertyManager.getInstance().getBoolean("development")) {
+            if(!PropertyManager.getInstance().getBoolean("system.development")) {
                 this.energy -= Constants.SHIP_ENERGY_COST_FIRE;
             }
         }
 
         this.shielding = controllerState.isShielding() && this.energy >= Constants.SHIP_ENERGY_COST_SHIELD;
-        if (this.shielding && !PropertyManager.getInstance().getBoolean("development")) {
+        if (this.shielding && !PropertyManager.getInstance().getBoolean("system.development")) {
             this.energy -= Constants.SHIP_ENERGY_COST_SHIELD;
         }
     }

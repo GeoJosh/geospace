@@ -18,6 +18,15 @@ public class ServiceAgent extends AbstractAgent {
         ServiceAgentManager.getInstance().addAgent(this);
     }
 
+    public void setAgentDescription(String agentDescription) {
+        this.agentDescription = agentDescription;
+    }
+
+    public void setAgentName(String agentName) {
+        this.agentName = agentName;
+    }
+
+    
     public String getAuthToken() {
         return authToken;
     }

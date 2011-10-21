@@ -28,7 +28,7 @@ public class TimerClock implements Runnable {
         try {
             while(this.timeLeft > 0) {
                 Thread.sleep(DELAY_VALUE);
-                if(!PropertyManager.getInstance().getBoolean("development")) {
+                if(!PropertyManager.getInstance().getBoolean("system.development")) {
                     this.timeLeft -= DELAY_VALUE;
                 }
             }

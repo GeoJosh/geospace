@@ -17,6 +17,8 @@ public class ServiceAgentEndpoint {
     public String connectAgent(@WebParam(name = "agentName") String agentName, @WebParam(name = "agentDescription") String agentDescription) {
         try {
             ServiceAgent agent = ServiceAgentManager.getInstance().requestAgent();
+            agent.setAgentName(agentName);
+            agent.setAgentDescription(agentDescription);
             GUIManager.getInstance().addWidget(new WidgetDialog("Client connected to service agent: " + agentName));
             return agent.getAuthToken();
         } catch (ServiceAgentManagerException ex) {

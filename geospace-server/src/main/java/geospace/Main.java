@@ -24,8 +24,8 @@ public class Main {
             wag.setGameWrapper(container);
             
             container.setDisplayMode(
-                    PropertyManager.getInstance().getInteger("width", container.getScreenWidth()),
-                    PropertyManager.getInstance().getInteger("height", container.getScreenHeight()),
+                    PropertyManager.getInstance().getInteger("game.width", container.getScreenWidth()),
+                    PropertyManager.getInstance().getInteger("game.height", container.getScreenHeight()),
                     argsList.contains(ARG_FULLSCREEN));
             container.start();
         }

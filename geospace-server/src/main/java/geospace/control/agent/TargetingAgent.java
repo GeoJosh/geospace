@@ -24,7 +24,7 @@ public class TargetingAgent extends AbstractAgent {
 
     @Override
     public void informGameState(CurrentGameState cgs) {
-        if(this.opponentId.isEmpty()) {
+        if(this.opponentId.isEmpty() || cgs.getShipInformation(this.opponentId) == null) {
             for(ShipInformation info : cgs.getShips()) {
                 if(!info.getId().equals(this.agentId)) {
                     this.opponentId = info.getId();

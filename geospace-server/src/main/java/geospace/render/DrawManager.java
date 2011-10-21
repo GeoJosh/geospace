@@ -77,13 +77,15 @@ public class DrawManager {
     }
 
     public void renderPlayerInfo(Graphics graphics, Player player) {
-        player.getEnergyBar().render(graphics);
-        
-        Font infoFont = FontManager.getInstance().getFont(FontType.TIMER, String.valueOf(player.getScore()));
-        infoFont.drawString(
-                player.getEnergyBar().getBarCenter().getX(),
-                player.getEnergyBar().getBarCenter().getY() - (infoFont.getLineHeight() / 2),
-                String.valueOf(player.getScore()));
+        if(player.getEnergyBar() != null) {
+            player.getEnergyBar().render(graphics);
+
+            Font infoFont = FontManager.getInstance().getFont(FontType.TIMER, String.valueOf(player.getScore()));
+            infoFont.drawString(
+                    player.getEnergyBar().getBarCenter().getX(),
+                    player.getEnergyBar().getBarCenter().getY() - (infoFont.getLineHeight() / 2),
+                    String.valueOf(player.getScore()));
+        }
     }
 
     public void renderEntities(Graphics graphics, List<EntityModel> entities) {
