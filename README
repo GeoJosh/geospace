@@ -168,8 +168,8 @@ An example of these agents can be found in within the geospace-remote-example pr
     7. When the program states that it is waiting for agents to connect execute the geospace-remote application.
        Ensure that the compiled agent jar is on the classpath for the geospace-remote applications and pass the
        full package name and class as an argument. For example:
-
-       java -jar geospace-remote-1.0.jar geospace.control.agent.MyAgentClass
+       
+        java -cp 'geospace-remote-1.0-jar-with-dependencies.jar:../examples/geospace-remote-example/target/geospace-remote-example-1.0.jar' geospace.control.agent.remote.RemoteAgent geospace.control.agent.RemoteTargetingAgent
 
     8. As the program runs informGameState will be called each time the proxy detects a new game state update.
        As required modify the class' agentController property to control your ship.
