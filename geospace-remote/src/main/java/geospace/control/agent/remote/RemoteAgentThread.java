@@ -28,6 +28,9 @@
 package geospace.control.agent.remote;
 
 import geospace.control.agent.AbstractAgent;
+import geospace.control.agent.service.CurrentGameState;
+import geospace.control.agent.service.GameEvent;
+import geospace.control.agent.service.GameEventType;
 import geospace.control.agent.service.ServiceAgentEndpoint;
 import geospace.control.agent.service.ServiceAgentEndpointService;
 
@@ -56,8 +59,18 @@ public final class RemoteAgentThread extends Thread {
                         this.agent.setAgentId(this.agentId);
                     }
                 } else {
-                    this.agent.informGameState(this.endpoint.getLastGameState());
+                    CurrentGameState gameState = this.endpoint.getLastGameState(this.authId);
+                    if(gameState != null) {
+                        this.agent.informGameState(gameState);
+                        
+                        for(GameEvent gameEvent : gameState.getGameEvents()) {
+                            if(gameEvent.getEvent() == GameEventType.GAME_END) {
+                                continueToRun = false;
+                            }
+                        }
+                    }
                     this.endpoint.setControllerState(this.authId, this.agent.getAgentController());
+                    
                 }
             } catch (Exception ex) {
                 continueToRun = false;

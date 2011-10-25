@@ -34,6 +34,7 @@ import geospace.entity.GeoSpaceException;
 import geospace.render.EffectManager;
 import geospace.control.agent.AbstractAgent;
 import geospace.control.CurrentGameState;
+import geospace.control.GameEvent.GameEventType;
 import geospace.control.agent.service.ServiceAgentManager;
 import geospace.entity.Point;
 import geospace.entity.Ship;
@@ -69,7 +70,6 @@ public class PlayingState extends BasicGameState {
     private Thread timerThread;
 
     public enum GameMode {
-
         DUEL,
         BATTLE_ROYALE
     }
@@ -132,6 +132,8 @@ public class PlayingState extends BasicGameState {
         this.timerClock = new TimerClock(PropertyManager.getInstance().getInteger("game.timelimit", 180), this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
         this.timerThread = new Thread(this.timerClock);
         this.timerThread.start();
+        
+        this.currentGameState.addEvent(GameEventType.GAME_START, null);
     }
 
     @Override
@@ -175,11 +177,11 @@ public class PlayingState extends BasicGameState {
         GUIManager.getInstance().render();
 
         synchronized (this.currentGameState) {
+            ServiceAgentManager.getInstance().updateGameState(this.currentGameState);
             this.currentGameState.updateState(this.timerClock.getTimeLeft());
             this.currentGameState.notifyAll();
         }
 
-        ServiceAgentManager.getInstance().updateGameState(this.timerClock.getTimeLeft());
     }
 
     private Ship spawnShip(Ship ship) {
@@ -213,6 +215,7 @@ public class PlayingState extends BasicGameState {
             Player winner = this.getWinner(this.players);
             if (winner != null) {
                 ((WinnerState) sbg.getState(GeoSpace.WINNER_STATE)).setWinnerName(winner.getAgent().getAgentName());
+                this.currentGameState.addEvent(GameEventType.GAME_END, null);
                 sbg.enterState(GeoSpace.WINNER_STATE);
             } else {
                 this.gameStage.shrinkStage(0.25f);
@@ -247,6 +250,8 @@ public class PlayingState extends BasicGameState {
     private void updatePlayer(List<Player> players) {
         for (Player player : players) {
             if (player.getShip().getState() == EntityState.DEAD) {
+                this.currentGameState.addEvent(GameEventType.DIED, player.getAgent().getAgentId());
+
                 for (Player enemy : players) {
                     if(enemy != player) {
                         enemy.updateScore();
@@ -255,6 +260,7 @@ public class PlayingState extends BasicGameState {
                 
                 if (this.timerThread.getState() != Thread.State.TERMINATED) {
                     this.spawnShip(player.getShip());
+                    this.currentGameState.addEvent(GameEventType.SPAWNED, player.getAgent().getAgentId());
                 }
             }
         }

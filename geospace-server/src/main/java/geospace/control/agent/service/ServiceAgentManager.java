@@ -24,19 +24,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package geospace.control.agent.service;
 
 import geospace.control.CurrentGameState;
+import geospace.control.GameEvent;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.xml.ws.Endpoint;
 
 public class ServiceAgentManager {
 
     private List<ServiceAgent> serviceAgentQueue;
     private List<ServiceAgent> activeServiceAgents;
-    private CurrentGameState lastGameState;
+    private Map<ServiceAgent, List<GameEvent>> eventQueue;
+    private final CurrentGameState lastGameState;
     private int timeLeft;
     private Endpoint serviceEndpoint;
     private static int ENDPOINT_PORT = 10508;
@@ -44,6 +48,8 @@ public class ServiceAgentManager {
     private ServiceAgentManager() {
         this.serviceAgentQueue = new LinkedList<ServiceAgent>();
         this.activeServiceAgents = new LinkedList<ServiceAgent>();
+        this.eventQueue = new HashMap<ServiceAgent, List<GameEvent>>();
+
         this.lastGameState = new CurrentGameState();
 
         this.serviceEndpoint = Endpoint.publish("http://localhost:" + ENDPOINT_PORT + "/AgentService", new ServiceAgentEndpoint());
@@ -68,17 +74,27 @@ public class ServiceAgentManager {
         return this.serviceAgentQueue.isEmpty();
     }
 
-    public CurrentGameState getLastGameState() {
-        if(this.timeLeft == 0 || this.timeLeft != this.lastGameState.getTimeLeft()) {
-            this.lastGameState.updateState(timeLeft);
+    public CurrentGameState getLastGameState(String authToken) throws ServiceAgentManagerException {
+        ServiceAgent agent = getServiceAgent(authToken);
+
+        synchronized (this.lastGameState) {
+            if (this.timeLeft == 0 || this.timeLeft != this.lastGameState.getTimeLeft()) {
+                this.lastGameState.updateState(timeLeft);
+            }
+
+            this.lastGameState.getGameEvents().clear();
+            this.lastGameState.addEvents(this.eventQueue.get(agent));
         }
         
+        this.eventQueue.get(agent).clear();
         return this.lastGameState;
-
     }
 
-    public void updateGameState(int timeLeft) {
-        this.timeLeft = timeLeft;
+    public void updateGameState(CurrentGameState cgs) {
+        this.timeLeft = cgs.getTimeLeft();
+        for (Entry<ServiceAgent, List<GameEvent>> entry : this.eventQueue.entrySet()) {
+            entry.getValue().addAll(cgs.getGameEvents());
+        }
     }
 
     public void addAgent(ServiceAgent agent) {
@@ -92,12 +108,14 @@ public class ServiceAgentManager {
 
         ServiceAgent agent = this.serviceAgentQueue.remove(0);
         this.activeServiceAgents.add(agent);
+        this.eventQueue.put(agent, new LinkedList<GameEvent>());
         return agent;
     }
 
     public void clearAgents() {
         this.serviceAgentQueue.clear();
         this.activeServiceAgents.clear();
+        this.eventQueue.clear();
     }
 
     public ServiceAgent getServiceAgent(String authToken) throws ServiceAgentManagerException {

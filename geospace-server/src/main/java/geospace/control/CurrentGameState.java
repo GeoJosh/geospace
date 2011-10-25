@@ -27,6 +27,7 @@
 
 package geospace.control;
 
+import geospace.control.GameEvent.GameEventType;
 import geospace.entity.Bullet;
 import geospace.entity.EntityModel;
 import geospace.entity.Ship;
@@ -40,6 +41,7 @@ public class CurrentGameState {
 
     private List<ShipInformation> ships;
     private List<BulletInformation> bullets;
+    private List<GameEvent> gameEvents;
     private FieldInformation field;
     private long timestamp;
     private int timeLeft;
@@ -47,9 +49,12 @@ public class CurrentGameState {
     public CurrentGameState() {
         this.ships = new LinkedList<ShipInformation>();
         this.bullets = new LinkedList<BulletInformation>();
+        this.gameEvents = new LinkedList<GameEvent>();
     }
 
     public void updateState(int timeLeft) {
+        this.gameEvents = new LinkedList<GameEvent>();
+        
         List<ShipInformation> iterShips = new LinkedList<ShipInformation>();
         List<BulletInformation> iterBullets = new LinkedList<BulletInformation>();
 
@@ -65,10 +70,26 @@ public class CurrentGameState {
 
         this.ships = iterShips;
         this.bullets = iterBullets;
-        
+
         this.timestamp = new Date().getTime();
     }
 
+    public List<GameEvent> getGameEvents() {
+        return gameEvents;
+    }
+
+    public void setGameEvents(List<GameEvent> gameEvents) {
+        // Method disabled
+    }
+    
+    public void addEvent(GameEventType eventType, String entityId) {
+        this.gameEvents.add(new GameEvent(eventType, entityId));
+    }
+    
+    public void addEvents(List<GameEvent> events) {
+        this.gameEvents.addAll(events);
+    }
+    
     public List<ShipInformation> getShips() {
         return ships;
     }

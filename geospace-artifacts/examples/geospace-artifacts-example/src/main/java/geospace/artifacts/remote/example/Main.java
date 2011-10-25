@@ -24,11 +24,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package geospace.artifacts.remote.example;
 
 import geospace.control.agent.service.ControllerState;
 import geospace.control.agent.service.CurrentGameState;
+import geospace.control.agent.service.GameEvent;
+import geospace.control.agent.service.GameEventType;
 import geospace.control.agent.service.ServiceAgentEndpoint;
 import geospace.control.agent.service.ServiceAgentEndpointService;
 import geospace.control.agent.service.ShipInformation;
@@ -64,27 +65,35 @@ public class Main {
                 if (this.agentId == null) {
                     this.agentId = this.endpoint.getAgentId(this.authId);
                 } else {
-                    this.lastGameState = this.endpoint.getLastGameState();
+                    this.lastGameState = this.endpoint.getLastGameState(this.authId);
+                    if (this.lastGameState != null) {
 
-                    if (this.opponentId.isEmpty() || getShipInformation(this.lastGameState, this.opponentId) == null) {
-                        for (ShipInformation info : this.lastGameState.getShips()) {
-                            if (!info.getId().equals(this.agentId)) {
-                                this.opponentId = info.getId();
+                        if (this.opponentId.isEmpty() || getShipInformation(this.lastGameState, this.opponentId) == null) {
+                            for (ShipInformation info : this.lastGameState.getShips()) {
+                                if (!info.getId().equals(this.agentId)) {
+                                    this.opponentId = info.getId();
+                                }
+                            }
+                        }
+
+                        ShipInformation shipInformation = getShipInformation(this.lastGameState, this.agentId);
+                        ShipInformation opponentInformation = getShipInformation(this.lastGameState, this.opponentId);
+
+                        if (opponentInformation != null && shipInformation != null) {
+                            float targetHeading = (float) getTheta(opponentInformation.getCenterX() - shipInformation.getCenterX(), opponentInformation.getCenterY() - shipInformation.getCenterY());
+                            adjustHeading(radiansToDegrees(targetHeading - shipInformation.getHeading()));
+                        }
+
+                        this.controllerState.setFiring(!this.controllerState.isTurningPort() && !this.controllerState.isTurningStarboard());
+
+                        this.endpoint.setControllerState(this.authId, this.controllerState);
+
+                        for (GameEvent gameEvent : this.lastGameState.getGameEvents()) {
+                            if (gameEvent.getEvent() == GameEventType.GAME_END) {
+                                continueToRun = false;
                             }
                         }
                     }
-
-                    ShipInformation shipInformation = getShipInformation(this.lastGameState, this.agentId);
-                    ShipInformation opponentInformation = getShipInformation(this.lastGameState, this.opponentId);
-
-                    if (opponentInformation != null && shipInformation != null) {
-                        float targetHeading = (float)getTheta(opponentInformation.getCenterX() - shipInformation.getCenterX(), opponentInformation.getCenterY() - shipInformation.getCenterY());
-                        adjustHeading(radiansToDegrees(targetHeading - shipInformation.getHeading()));
-                    }
-
-                    this.controllerState.setFiring(!this.controllerState.isTurningPort() && !this.controllerState.isTurningStarboard());
-
-                    this.endpoint.setControllerState(this.authId, this.controllerState);
                 }
 
                 try {
@@ -96,17 +105,17 @@ public class Main {
         }
 
         public double getTheta(double x, double y) {
-		double theta = StrictMath.atan2(y, x);
-		if ((theta < -TWOPI) || (theta > TWOPI)) {
-			theta = theta % TWOPI;
-		}
-		if (theta < 0) {
-			theta = TWOPI + theta;
-		}
+            double theta = StrictMath.atan2(y, x);
+            if ((theta < -TWOPI) || (theta > TWOPI)) {
+                theta = theta % TWOPI;
+            }
+            if (theta < 0) {
+                theta = TWOPI + theta;
+            }
 
-		return theta;
-	}
-        
+            return theta;
+        }
+
         private void adjustHeading(double headingDiff) {
             headingDiff = headingDiff > 180 ? headingDiff - 360 : headingDiff < -180 ? headingDiff + 360 : headingDiff;
 

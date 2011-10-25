@@ -31,6 +31,8 @@ import geospace.control.ControllerState;
 import geospace.control.CurrentGameState;
 import geospace.gui.GUIManager;
 import geospace.gui.WidgetDialog;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -55,8 +57,12 @@ public class ServiceAgentEndpoint {
 
     @WebMethod()
     @WebResult(name = "lastGameState")
-    public CurrentGameState getLastGameState() {
-        return ServiceAgentManager.getInstance().getLastGameState();
+    public CurrentGameState getLastGameState(@WebParam(name = "authToken") String authToken) {
+        try {
+            return ServiceAgentManager.getInstance().getLastGameState(authToken);
+        } catch (ServiceAgentManagerException ex) {
+            return null;
+        }
     }
 
     @WebMethod()

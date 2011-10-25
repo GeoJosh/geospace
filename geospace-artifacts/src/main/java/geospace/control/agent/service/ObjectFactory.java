@@ -41,6 +41,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ConnectAgentResponse }
+     * 
+     */
+    public ConnectAgentResponse createConnectAgentResponse() {
+        return new ConnectAgentResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetAgentIdResponse }
+     * 
+     */
+    public GetAgentIdResponse createGetAgentIdResponse() {
+        return new GetAgentIdResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetAgentId }
+     * 
+     */
+    public GetAgentId createGetAgentId() {
+        return new GetAgentId();
+    }
+
+    /**
+     * Create an instance of {@link SetControllerState }
+     * 
+     */
+    public SetControllerState createSetControllerState() {
+        return new SetControllerState();
+    }
+
+    /**
+     * Create an instance of {@link GetLastGameState }
+     * 
+     */
+    public GetLastGameState createGetLastGameState() {
+        return new GetLastGameState();
+    }
+
+    /**
      * Create an instance of {@link SetControllerStateResponse }
      * 
      */
@@ -49,11 +89,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CurrentGameState }
+     * 
+     */
+    public CurrentGameState createCurrentGameState() {
+        return new CurrentGameState();
+    }
+
+    /**
      * Create an instance of {@link FieldInformation }
      * 
      */
     public FieldInformation createFieldInformation() {
         return new FieldInformation();
+    }
+
+    /**
+     * Create an instance of {@link ConnectAgent }
+     * 
+     */
+    public ConnectAgent createConnectAgent() {
+        return new ConnectAgent();
     }
 
     /**
@@ -73,35 +129,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SetControllerState }
+     * Create an instance of {@link GameEvent }
      * 
      */
-    public SetControllerState createSetControllerState() {
-        return new SetControllerState();
-    }
-
-    /**
-     * Create an instance of {@link CurrentGameState }
-     * 
-     */
-    public CurrentGameState createCurrentGameState() {
-        return new CurrentGameState();
-    }
-
-    /**
-     * Create an instance of {@link ConnectAgentResponse }
-     * 
-     */
-    public ConnectAgentResponse createConnectAgentResponse() {
-        return new ConnectAgentResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetAgentId }
-     * 
-     */
-    public GetAgentId createGetAgentId() {
-        return new GetAgentId();
+    public GameEvent createGameEvent() {
+        return new GameEvent();
     }
 
     /**
@@ -113,35 +145,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetAgentIdResponse }
-     * 
-     */
-    public GetAgentIdResponse createGetAgentIdResponse() {
-        return new GetAgentIdResponse();
-    }
-
-    /**
      * Create an instance of {@link ControllerState }
      * 
      */
     public ControllerState createControllerState() {
         return new ControllerState();
-    }
-
-    /**
-     * Create an instance of {@link ConnectAgent }
-     * 
-     */
-    public ConnectAgent createConnectAgent() {
-        return new ConnectAgent();
-    }
-
-    /**
-     * Create an instance of {@link GetLastGameState }
-     * 
-     */
-    public GetLastGameState createGetLastGameState() {
-        return new GetLastGameState();
     }
 
     /**

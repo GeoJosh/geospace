@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="bullets" type="{http://service.agent.control.geospace/}bulletInformation" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="field" type="{http://service.agent.control.geospace/}fieldInformation" minOccurs="0"/>
+ *         &lt;element name="gameEvents" type="{http://service.agent.control.geospace/}gameEvent" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="ships" type="{http://service.agent.control.geospace/}shipInformation" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="timeLeft" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="timestamp" type="{http://www.w3.org/2001/XMLSchema}long"/>
@@ -36,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "currentGameState", propOrder = {
     "bullets",
     "field",
+    "gameEvents",
     "ships",
     "timeLeft",
     "timestamp"
@@ -45,6 +47,8 @@ public class CurrentGameState {
     @XmlElement(nillable = true)
     protected List<BulletInformation> bullets;
     protected FieldInformation field;
+    @XmlElement(nillable = true)
+    protected List<GameEvent> gameEvents;
     @XmlElement(nillable = true)
     protected List<ShipInformation> ships;
     protected int timeLeft;
@@ -101,6 +105,35 @@ public class CurrentGameState {
      */
     public void setField(FieldInformation value) {
         this.field = value;
+    }
+
+    /**
+     * Gets the value of the gameEvents property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the gameEvents property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getGameEvents().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link GameEvent }
+     * 
+     * 
+     */
+    public List<GameEvent> getGameEvents() {
+        if (gameEvents == null) {
+            gameEvents = new ArrayList<GameEvent>();
+        }
+        return this.gameEvents;
     }
 
     /**

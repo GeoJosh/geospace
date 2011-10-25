@@ -53,6 +53,7 @@ public interface ServiceAgentEndpoint {
 
     /**
      * 
+     * @param authToken
      * @return
      *     returns geospace.control.agent.service.CurrentGameState
      */
@@ -60,7 +61,9 @@ public interface ServiceAgentEndpoint {
     @WebResult(name = "lastGameState", targetNamespace = "")
     @RequestWrapper(localName = "getLastGameState", targetNamespace = "http://service.agent.control.geospace/", className = "geospace.control.agent.service.GetLastGameState")
     @ResponseWrapper(localName = "getLastGameStateResponse", targetNamespace = "http://service.agent.control.geospace/", className = "geospace.control.agent.service.GetLastGameStateResponse")
-    public CurrentGameState getLastGameState();
+    public CurrentGameState getLastGameState(
+        @WebParam(name = "authToken", targetNamespace = "")
+        String authToken);
 
     /**
      * 
