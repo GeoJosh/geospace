@@ -38,11 +38,13 @@ public class FontManager {
     private UnicodeFont defaultFont;
     private UnicodeFont widgetFont;
     private UnicodeFont timerFont;
+    private UnicodeFont gutterFont;
 
     public enum FontType {
         DEFAULT,
         WIDGET,
-        TIMER
+        TIMER,
+        GUTTER
     }
 
     private FontManager() {
@@ -63,6 +65,8 @@ public class FontManager {
                 return this.timerFont;
             case WIDGET:
                 return this.widgetFont;
+            case GUTTER:
+                return this.gutterFont;
             default:
                 return defaultFont;
         }
@@ -93,6 +97,9 @@ public class FontManager {
                 break;
             case WIDGET:
                 this.widgetFont = font;
+                break;
+            case GUTTER:
+                this.gutterFont = font;
                 break;
             default:
                 this.defaultFont = font;

@@ -35,6 +35,7 @@ import geospace.entity.Point;
 import geospace.entity.Ship;
 import geospace.render.FontManager.FontType;
 import geospace.states.Player;
+import geospace.states.PlayingState;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -106,10 +107,14 @@ public class DrawManager {
     public void renderPlayerInfo(Graphics graphics, Player player) {
         if(player.getEnergyBar() != null) {
             player.getEnergyBar().render(graphics);
+            FontManager.getInstance().getFont(FontType.GUTTER).drawString(player.getEnergyBar().getTopLeft().getX(), player.getEnergyBar().getTopLeft().getY() + PlayingState.TITLE_HEIGHT * 0.8f, player.getAgent().getAgentName());
 
             Font infoFont = FontManager.getInstance().getFont(FontType.TIMER, String.valueOf(player.getScore()));
+            
+            int scoreWidth = infoFont.getWidth(String.valueOf(player.getScore()));
+            
             infoFont.drawString(
-                    player.getEnergyBar().getBarCenter().getX(),
+                    player.getEnergyBar().getBarCenter().getX() - (scoreWidth / 2),
                     player.getEnergyBar().getBarCenter().getY() - (infoFont.getLineHeight() / 2),
                     String.valueOf(player.getScore()));
         }

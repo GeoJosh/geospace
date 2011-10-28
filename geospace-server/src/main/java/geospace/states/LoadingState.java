@@ -83,6 +83,7 @@ public class LoadingState extends BasicGameState {
             FontManager.getInstance().setFont(FontType.DEFAULT, new UnicodeFont(baseFont.deriveFont(14.0f)));
             FontManager.getInstance().setFont(FontType.WIDGET, new UnicodeFont(baseFont.deriveFont(14.0f)));
             FontManager.getInstance().setFont(FontType.TIMER, new UnicodeFont(baseFont.deriveFont(25.0f)));
+            FontManager.getInstance().setFont(FontType.GUTTER, new UnicodeFont(baseFont.deriveFont(14.0f)));
         } catch (FontFormatException ex) {
             Logger.getLogger(LoadingState.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

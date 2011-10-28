@@ -43,6 +43,8 @@ import geospace.render.DrawManager;
 import geospace.entity.EntityManager;
 import geospace.entity.EntityModel.EntityState;
 import geospace.gui.GUIManager;
+import geospace.render.FontManager;
+import geospace.render.FontManager.FontType;
 import geospace.render.elements.EnergyBar;
 import geospace.render.elements.TimerClock;
 import java.util.LinkedList;
@@ -62,6 +64,8 @@ public class PlayingState extends BasicGameState {
     private Stage gameStage;
     public static final int TITLE_HEIGHT = 50;
     public static final int BORDER_SIZE = 10;
+    public static final int GUTTER_SIZE_DEFAULT = 100;
+    public static int GUTTER_SIZE = 100;
     private List<Player> players;
     private List<Thread> playerThreads;
     private final CurrentGameState currentGameState;
@@ -108,28 +112,32 @@ public class PlayingState extends BasicGameState {
     public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
         super.enter(gc, sbg);
 
-        this.gameStage = new Stage(new Point(BORDER_SIZE, BORDER_SIZE + TITLE_HEIGHT), gc.getWidth() - (2 * BORDER_SIZE), gc.getHeight() - (2 * BORDER_SIZE) - TITLE_HEIGHT);
-
         AudioManager.getInstance().playRandomMusic(false);
 
+        this.GUTTER_SIZE = this.GUTTER_SIZE_DEFAULT;
+        
         for (Player player : this.players) {
             try {
-                player.setShip(
-                        this.spawnShip(
-                        new Ship(player.getAgent(), 0, 0, 0, player.getPlayerColor())));
+                player.setShip(new Ship(player.getAgent(), 0, 0, 0, player.getPlayerColor()));
             } catch (GeoSpaceException ex) {
                 Logger.getLogger(PlayingState.class.getName()).log(Level.SEVERE, null, ex);
                 throw new SlickException("Unable to instantiate Ship with agent " + player.getAgent().getAgentName());
             }
-
+            
+            if(FontManager.getInstance().getFont(FontType.GUTTER).getWidth(player.getAgent().getAgentName()) > this.GUTTER_SIZE) {
+               this.GUTTER_SIZE = FontManager.getInstance().getFont(FontType.GUTTER).getWidth(player.getAgent().getAgentName());
+            }
+                    
             Thread playerThread = new Thread(player);
             playerThreads.add(playerThread);
             playerThread.start();
         }
 
-        initializeGameMode();
+        initializeGameMode(gc);
 
-        this.timerClock = new TimerClock(PropertyManager.getInstance().getInteger("game.timelimit", 180), this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
+        for (Player player : this.players) {
+            this.spawnShip(player.getShip());
+        }
         this.timerThread = new Thread(this.timerClock);
         this.timerThread.start();
         
@@ -198,11 +206,25 @@ public class PlayingState extends BasicGameState {
         return ship;
     }
 
-    private void initializeGameMode() {
+    private void initializeGameMode(GameContainer gc) {
         switch (this.currentGameMode) {
             case DUEL:
+                this.gameStage = new Stage(new Point(BORDER_SIZE, BORDER_SIZE + TITLE_HEIGHT), gc.getWidth() - (2 * BORDER_SIZE), gc.getHeight() - (2 * BORDER_SIZE) - TITLE_HEIGHT);
                 this.players.get(0).setEnergyBar(new EnergyBar(this.players.get(0).getShip(), new Point(BORDER_SIZE, BORDER_SIZE), (this.gameStage.getStageWidth() / 2) - 100, TITLE_HEIGHT - BORDER_SIZE));
                 this.players.get(1).setEnergyBar(new EnergyBar(this.players.get(1).getShip(), new Point((this.gameStage.getStageWidth() / 2) + 100 + BORDER_SIZE, BORDER_SIZE), (this.gameStage.getStageWidth() / 2) - 100, TITLE_HEIGHT - BORDER_SIZE));
+
+                this.timerClock = new TimerClock(PropertyManager.getInstance().getInteger("game.timelimit", 180), this.gameStage.getStageWidth() / 2, (TITLE_HEIGHT / 2) + BORDER_SIZE);
+                break;
+            case BATTLE_ROYALE:
+                this.gameStage = new Stage(new Point(BORDER_SIZE, BORDER_SIZE), gc.getWidth() - (2 * BORDER_SIZE) - GUTTER_SIZE, gc.getHeight() - (2 * BORDER_SIZE));
+
+                int infoOffset = 0;                
+                for(Player player : this.players) {
+                    player.setEnergyBar(new EnergyBar(player.getShip(), new Point(this.gameStage.getStageWidth() + (2 * BORDER_SIZE), BORDER_SIZE + TITLE_HEIGHT + infoOffset), GUTTER_SIZE - BORDER_SIZE, TITLE_HEIGHT * 0.75f));
+                    infoOffset += TITLE_HEIGHT * 1.2f;
+                    FontManager.getInstance().getFont(FontType.GUTTER, player.getAgent().getAgentName());
+                }
+                this.timerClock = new TimerClock(PropertyManager.getInstance().getInteger("game.timelimit", 180), gc.getWidth() - BORDER_SIZE - (GUTTER_SIZE / 2), (TITLE_HEIGHT / 2) + BORDER_SIZE);
                 break;
         }
 
