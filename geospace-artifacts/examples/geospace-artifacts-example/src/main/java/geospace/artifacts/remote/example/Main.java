@@ -88,9 +88,11 @@ public class Main {
 
                         this.endpoint.setControllerState(this.authId, this.controllerState);
 
-                        for (GameEvent gameEvent : this.lastGameState.getGameEvents()) {
-                            if (gameEvent.getEvent() == GameEventType.GAME_END) {
-                                continueToRun = false;
+                        if(this.lastGameState.getGameEvents() != null) {
+                            for (GameEvent gameEvent : this.lastGameState.getGameEvents()) {
+                                if (gameEvent != null && gameEvent.getEvent() == GameEventType.GAME_END) {
+                                    continueToRun = false;
+                                }
                             }
                         }
                     }

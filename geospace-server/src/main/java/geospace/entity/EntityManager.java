@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public class EntityManager {
-    private List<EntityModel> entities;
+    private final List<EntityModel> entities;
     private HashMap<EntityModel, ManagementAction> managementQueue;
 
     private enum ManagementAction {
@@ -73,20 +73,28 @@ public class EntityManager {
                 }
             }
 
-            this.entities.add(entity);
+            synchronized(this.entities) {
+                this.entities.add(entity);
+            }
         }
     }
 
     public void addEntity(List<EntityModel> entities) {
-        this.entities.addAll(entities);
+        synchronized(this.entities) {
+            this.entities.addAll(entities);
+        }
     }
 
     public void removeEntity(EntityModel entity) {
-        this.entities.remove(entity);
+        synchronized(this.entities) {
+            this.entities.remove(entity);
+        }
     }
 
     public void clearEntities() {
-        this.entities.clear();
+        synchronized(this.entities) {
+            this.entities.clear();
+        }
     }
     
     public void updateEntities() {

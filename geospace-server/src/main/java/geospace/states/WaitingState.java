@@ -82,10 +82,11 @@ public class WaitingState extends BasicGameState {
     
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
+        EffectManager.getInstance().render(grphcs);
+        
         Font gameFont = FontManager.getInstance().getFont(FontType.DEFAULT, WAITING_STRING);
         gameFont.drawString(gc.getWidth() / 2 - gameFont.getWidth(WAITING_STRING) / 2, gc.getHeight() / 2 - gameFont.getLineHeight() / 2, WAITING_STRING);
+        
         GUIManager.getInstance().render();
-
-        EffectManager.getInstance().render(grphcs);
     }
 }

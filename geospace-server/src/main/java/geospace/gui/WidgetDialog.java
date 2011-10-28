@@ -69,6 +69,8 @@ public class WidgetDialog extends AbstractGuiWidget {
             GUIManager.getInstance().addWidget(this.dialogButton);
         }
         
+        gameContainer.getGraphics().setColor(DEFAULT_WIDGET_BGCOLOR);
+        gameContainer.getGraphics().fillRoundRect(frame.getMinX(), frame.getMinY(), frame.getWidth(), frame.getHeight(), (int)frame.getCornerRadius());
         gameContainer.getGraphics().setColor(AbstractGuiWidget.DEFAULT_WIDGET_COLOR);
         gameContainer.getGraphics().draw(frame);
         FontManager.getInstance().getFont(FontType.WIDGET, this.message).drawString(this.frame.getCenterX() - (this.messageWidth / 2), this.frame.getY() + AbstractGuiWidget.WIDGET_PADDING, this.message);

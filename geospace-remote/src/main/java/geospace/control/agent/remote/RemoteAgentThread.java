@@ -63,9 +63,11 @@ public final class RemoteAgentThread extends Thread {
                     if(gameState != null) {
                         this.agent.informGameState(gameState);
                         
-                        for(GameEvent gameEvent : gameState.getGameEvents()) {
-                            if(gameEvent.getEvent() == GameEventType.GAME_END) {
-                                continueToRun = false;
+                        if(gameState.getGameEvents() != null) {
+                            for(GameEvent gameEvent : gameState.getGameEvents()) {
+                                if(gameEvent != null && gameEvent.getEvent() == GameEventType.GAME_END) {
+                                    continueToRun = false;
+                                }
                             }
                         }
                     }

@@ -58,13 +58,16 @@ public class CurrentGameState {
         List<ShipInformation> iterShips = new LinkedList<ShipInformation>();
         List<BulletInformation> iterBullets = new LinkedList<BulletInformation>();
 
-        for (EntityModel entity : EntityManager.getInstance().getEntities()) {
-            if (entity instanceof Ship) {
-                iterShips.add(new ShipInformation((Ship) entity));
-            } else if (entity instanceof Bullet) {
-                iterBullets.add(new BulletInformation((Bullet) entity));
-            } else if (entity instanceof Field) {
-                this.field = new FieldInformation((Field) entity);
+        List<EntityModel> entityList = EntityManager.getInstance().getEntities();
+        synchronized(entityList) {
+            for (EntityModel entity : EntityManager.getInstance().getEntities()) {
+                if (entity instanceof Ship) {
+                    iterShips.add(new ShipInformation((Ship) entity));
+                } else if (entity instanceof Bullet) {
+                    iterBullets.add(new BulletInformation((Bullet) entity));
+                } else if (entity instanceof Field) {
+                    this.field = new FieldInformation((Field) entity);
+                }
             }
         }
 

@@ -40,7 +40,7 @@ public class ServiceAgentManager {
     private List<ServiceAgent> serviceAgentQueue;
     private List<ServiceAgent> activeServiceAgents;
     private Map<ServiceAgent, List<GameEvent>> eventQueue;
-    private final CurrentGameState lastGameState;
+    private CurrentGameState lastGameState;
     private int timeLeft;
     private Endpoint serviceEndpoint;
     private static int ENDPOINT_PORT = 10508;
@@ -77,14 +77,14 @@ public class ServiceAgentManager {
     public CurrentGameState getLastGameState(String authToken) throws ServiceAgentManagerException {
         ServiceAgent agent = getServiceAgent(authToken);
 
-        synchronized (this.lastGameState) {
+        //synchronized (this.lastGameState) {
             if (this.timeLeft == 0 || this.timeLeft != this.lastGameState.getTimeLeft()) {
                 this.lastGameState.updateState(timeLeft);
             }
 
             this.lastGameState.getGameEvents().clear();
             this.lastGameState.addEvents(this.eventQueue.get(agent));
-        }
+        //}
         
         this.eventQueue.get(agent).clear();
         return this.lastGameState;
